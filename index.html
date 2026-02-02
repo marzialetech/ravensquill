@@ -247,6 +247,29 @@
             overflow: hidden;
         }
         .app-window-body a { color: #c9a227; text-decoration: underline; }
+
+        .browse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, auto);
+            gap: 12px 16px;
+        }
+        .browse-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .browse-item img {
+            width: 36px;
+            height: 48px;
+            object-fit: contain;
+        }
+        .browse-caption {
+            font-size: 11px;
+            color: #c62828;
+            text-align: center;
+        }
         .app-window-body a:hover { color: #e8d48a; }
 
 
@@ -388,8 +411,20 @@
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <p>Our catalog is coming soon. In the meantime, visit us in person or reach out via Contact.</p>
-            <p><a href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" target="_blank" rel="noopener">Follow us on Facebook</a> for updates.</p>
+            <div class="browse-grid">
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+                <div class="browse-item"><img src="assets/book-black.svg" alt=""><span class="browse-caption">Coming Soon</span></div>
+            </div>
         </div>
     </div>
 
