@@ -58,6 +58,10 @@
             align-items: center;
             position: relative;
         }
+        .stage .figure:nth-child(1),
+        .stage .figure:nth-child(2) {
+            min-height: 200px;
+        }
         .stage .figure:nth-child(1) {
             margin-top: calc(clamp(4rem, 12vw, 8rem) + 18vh);
         }
@@ -71,19 +75,15 @@
             height: auto;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
         }
+        .stage .figure .quill-img,
         .stage .figure .raven-img {
+            position: fixed;
             display: block;
             width: 100%;
             max-width: min(45vw, 500px);
             height: auto;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-        }
-        .stage .figure .quill-img {
-            display: block;
-            width: 100%;
-            max-width: min(45vw, 500px);
-            height: auto;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+            z-index: 25;
         }
         @media (min-width: 701px) {
             .stage .figure .quill-img {
@@ -413,6 +413,25 @@
     // Web3Forms - Replace with your key from https://web3forms.com (and update mailTo value)
     const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
 
+    const ravenImg = document.querySelector('.raven-img');
+    const quillImg = document.querySelector('.quill-img');
+
+    function positionFigures() {
+        if (!aboutBtn || !contactBtn || !ravenImg || !quillImg) return;
+        var ar = aboutBtn.getBoundingClientRect();
+        var cr = contactBtn.getBoundingClientRect();
+        var aboutCx = ar.left + ar.width / 2;
+        var aboutCy = ar.top + ar.height / 2;
+        var contactCx = cr.left + cr.width / 2;
+        var contactCy = cr.top + cr.height / 2;
+
+        ravenImg.style.left = (contactCx - ravenImg.offsetWidth / 2) + 'px';
+        ravenImg.style.top = (aboutCy - ravenImg.offsetHeight / 2) + 'px';
+
+        quillImg.style.left = (aboutCx - quillImg.offsetWidth / 2) + 'px';
+        quillImg.style.top = (contactCy - quillImg.offsetHeight / 2) + 'px';
+    }
+
     function openWindow(win, btn) {
         if (!win) return;
         win.style.left = Math.max(10, (window.innerWidth - 360) / 2) + 'px';
@@ -531,6 +550,10 @@
         newsletterWindowClose.addEventListener('click', function() { closeWindow(newsletterWindow); });
 
         mailSendBtn.addEventListener('click', sendEmail);
+
+        positionFigures();
+        window.addEventListener('resize', positionFigures);
+        window.addEventListener('load', positionFigures);
     }
 
     if (document.readyState === 'loading') {
