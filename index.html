@@ -168,7 +168,7 @@
             display: none;
             font-size: 14px;
         }
-        #newsletterWindow {
+        #photosWindow {
             min-width: 340px;
         }
         .app-window.open { display: block; }
@@ -251,17 +251,24 @@
             margin: 0 0 8px 0;
         }
 
-        /* Facebook embed container - dark academia frame */
-        .fb-embed-wrapper {
-            margin-top: 12px;
+        .photos-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #c9a227;
+            margin: 16px 0 8px 0;
+        }
+        .photos-section-title:first-child { margin-top: 0; }
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .photos-grid img {
             width: 100%;
-            max-width: 380px;
-            border: 2px solid #5c5240;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
-            background: #1a1510;
-            min-height: 300px;
+            height: auto;
+            display: block;
+            border-radius: 2px;
+            border: 1px solid #5c5240;
         }
     </style>
 </head>
@@ -283,9 +290,9 @@
             <img src="assets/book-green.svg" alt="" draggable="false">
             <span class="icon-caption">Events</span>
         </button>
-        <button class="desktop-icon" id="newsletterBtn" type="button">
-            <img src="assets/book-brown.svg" alt="" draggable="false">
-            <span class="icon-caption">Newsletter</span>
+        <button class="desktop-icon" id="photosBtn" type="button">
+            <img src="assets/icon-photos.svg" alt="" draggable="false">
+            <span class="icon-caption">Photos</span>
         </button>
         <button class="desktop-icon" id="contactBtn" type="button">
             <img src="assets/book-navy.svg" alt="" draggable="false">
@@ -357,22 +364,28 @@
         </div>
     </div>
 
-    <!-- Newsletter Window -->
-    <div class="app-window" id="newsletterWindow">
-        <div class="app-window-header" id="newsletterWindowHeader">
-            <span>Newsletter</span>
-            <button class="app-window-close" id="newsletterWindowClose">&times;</button>
+    <!-- Photos Window -->
+    <div class="app-window" id="photosWindow">
+        <div class="app-window-header" id="photosWindowHeader">
+            <span>Photos</span>
+            <button class="app-window-close" id="photosWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <p>Subscribe to our newsletter for updates on new arrivals, events, and reading recommendations.</p>
-            <div class="fb-embed-wrapper">
-                <div class="fb-page" data-href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" data-tabs="timeline,events" data-width="380" data-height="400" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"></div>
+            <h3 class="photos-section-title">General store</h3>
+            <div class="photos-grid">
+                <img src="assets/photo-store-1.png" alt="Store lounge and seating area">
+                <img src="assets/photo-store-2.png" alt="Bookstore aisle with shelves">
+                <img src="assets/photo-store-3.png" alt="Book display with neon sign">
+                <img src="assets/photo-store-4.png" alt="Bridgerton books and raven artwork">
+            </div>
+            <h3 class="photos-section-title">Board games available</h3>
+            <div class="photos-grid">
+                <img src="assets/photo-games-1.png" alt="Custom Scrabble board">
+                <img src="assets/photo-games-2.png" alt="Backgammon set">
+                <img src="assets/photo-games-3.png" alt="Chess and checkers set">
             </div>
         </div>
     </div>
-
-    <div id="fb-root"></div>
-    <script async defer src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v21.0"></script>
 
     <script>
 (function() {
@@ -381,7 +394,7 @@
     const aboutBtn = document.getElementById('aboutBtn');
     const browseBtn = document.getElementById('browseBtn');
     const eventsBtn = document.getElementById('eventsBtn');
-    const newsletterBtn = document.getElementById('newsletterBtn');
+    const photosBtn = document.getElementById('photosBtn');
 
     // Windows
     const contactWindow = document.getElementById('contactWindow');
@@ -396,24 +409,24 @@
     const aboutWindow = document.getElementById('aboutWindow');
     const aboutWindowHeader = document.getElementById('aboutWindowHeader');
     const aboutWindowClose = document.getElementById('aboutWindowClose');
-    const newsletterWindow = document.getElementById('newsletterWindow');
-    const newsletterWindowHeader = document.getElementById('newsletterWindowHeader');
-    const newsletterWindowClose = document.getElementById('newsletterWindowClose');
+    const photosWindow = document.getElementById('photosWindow');
+    const photosWindowHeader = document.getElementById('photosWindowHeader');
+    const photosWindowClose = document.getElementById('photosWindowClose');
 
     const ravenImg = document.querySelector('.raven-img');
     const quillImg = document.querySelector('.quill-img');
 
     function positionFigures() {
-        if (!aboutBtn || !newsletterBtn || !browseBtn || !eventsBtn || !contactBtn || !ravenImg || !quillImg) return;
+        if (!aboutBtn || !photosBtn || !browseBtn || !eventsBtn || !contactBtn || !ravenImg || !quillImg) return;
         var ar = aboutBtn.getBoundingClientRect();
-        var nr = newsletterBtn.getBoundingClientRect();
+        var pr = photosBtn.getBoundingClientRect();
         var br = browseBtn.getBoundingClientRect();
         var er = eventsBtn.getBoundingClientRect();
         var cr = contactBtn.getBoundingClientRect();
         var aboutCx = ar.left + ar.width / 2;
         var browseCx = br.left + br.width / 2;
-        var newsletterCx = nr.left + nr.width / 2;
-        var newsletterCy = nr.top + nr.height / 2;
+        var photosCx = pr.left + pr.width / 2;
+        var photosCy = pr.top + pr.height / 2;
         var contactCy = cr.top + cr.height / 2;
         var browseCy = br.top + br.height / 2;
         var eventsCy = er.top + er.height / 2;
@@ -434,7 +447,7 @@
         ravenImg.style.left = (ravenCx - ravenWidth / 2) + 'px';
 
         var quillTop = (browseCy + eventsCy) / 2;
-        var quillBottom = (newsletterCy + contactCy) / 2;
+        var quillBottom = (photosCy + contactCy) / 2;
         var quillHeight = quillBottom - quillTop;
         var quillWidth = quillHeight * (quillImg.naturalWidth / quillImg.naturalHeight) || quillImg.offsetWidth;
         /* Top-middle and bottom-middle at 30% viewport width */
@@ -456,9 +469,6 @@
         win.classList.add('open');
         requestAnimationFrame(function() {
             win.style.left = Math.max(10, (window.innerWidth - win.offsetWidth) / 2) + 'px';
-            if (win === newsletterWindow && typeof FB !== 'undefined') {
-                FB.XFBML.parse(win);
-            }
         });
     }
 
@@ -476,19 +486,19 @@
     }, { passive: false });
 
     function init() {
-        allWindows = [contactWindow, browseWindow, eventsWindow, aboutWindow, newsletterWindow];
+        allWindows = [contactWindow, browseWindow, eventsWindow, aboutWindow, photosWindow];
 
         aboutBtn.addEventListener('click', function() { openWindow(aboutWindow, aboutBtn); });
         browseBtn.addEventListener('click', function() { openWindow(browseWindow, browseBtn); });
         eventsBtn.addEventListener('click', function() { openWindow(eventsWindow, eventsBtn); });
-        newsletterBtn.addEventListener('click', function() { openWindow(newsletterWindow, newsletterBtn); });
+        photosBtn.addEventListener('click', function() { openWindow(photosWindow, photosBtn); });
         contactBtn.addEventListener('click', function() { openWindow(contactWindow, contactBtn); });
 
         contactWindowClose.addEventListener('click', function() { closeWindow(contactWindow); });
         aboutWindowClose.addEventListener('click', function() { closeWindow(aboutWindow); });
         browseWindowClose.addEventListener('click', function() { closeWindow(browseWindow); });
         eventsWindowClose.addEventListener('click', function() { closeWindow(eventsWindow); });
-        newsletterWindowClose.addEventListener('click', function() { closeWindow(newsletterWindow); });
+        photosWindowClose.addEventListener('click', function() { closeWindow(photosWindow); });
 
         positionFigures();
         window.addEventListener('resize', positionFigures);
