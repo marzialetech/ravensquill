@@ -105,9 +105,31 @@
             }
         }
 
+        /* Icon Bar - fixed position, no JS layout */
+        .icon-bar {
+            position: fixed;
+            left: 50%;
+            top: 30%;
+            transform: translate(-50%, 0);
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 14px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .icon-bar .desktop-icon {
+            pointer-events: auto;
+        }
+        .icon-bar .desktop-icon:nth-child(1) { margin-top: 0; }
+        .icon-bar .desktop-icon:nth-child(2) { margin-top: 15vh; }
+        .icon-bar .desktop-icon:nth-child(3) { margin-top: 30vh; }
+        .icon-bar .desktop-icon:nth-child(4) { margin-top: 45vh; }
+        .icon-bar .desktop-icon:nth-child(5) { margin-top: 60vh; }
+
         /* Desktop Icons */
         .desktop-icon {
-            position: absolute;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -115,14 +137,13 @@
             background: transparent;
             border: none;
             padding: 0.5rem;
-            cursor: grab;
+            cursor: pointer;
             user-select: none;
-            z-index: 100;
             width: clamp(3rem, 8vw, 4.5rem);
             transform: scale(1.5);
             transform-origin: center center;
+            flex-shrink: 0;
         }
-        .desktop-icon:active { cursor: grabbing; }
         .desktop-icon img,
         .desktop-icon svg {
             display: block;
@@ -235,34 +256,37 @@
         <img src="assets/logo.svg" alt="The Raven's Quill Bookstore">
     </div>
 
+    <div class="icon-bar">
+        <button class="desktop-icon" id="aboutBtn" type="button">
+            <img src="assets/book-gold.svg" alt="" draggable="false">
+            <span class="icon-caption">About</span>
+        </button>
+        <button class="desktop-icon" id="browseBtn" type="button">
+            <img src="assets/book-burgundy.svg" alt="" draggable="false">
+            <span class="icon-caption">Browse</span>
+        </button>
+        <button class="desktop-icon" id="eventsBtn" type="button">
+            <img src="assets/book-green.svg" alt="" draggable="false">
+            <span class="icon-caption">Events</span>
+        </button>
+        <button class="desktop-icon" id="newsletterBtn" type="button">
+            <img src="assets/book-brown.svg" alt="" draggable="false">
+            <span class="icon-caption">Newsletter</span>
+        </button>
+        <button class="desktop-icon" id="contactBtn" type="button">
+            <img src="assets/book-navy.svg" alt="" draggable="false">
+            <span class="icon-caption">Contact</span>
+        </button>
+    </div>
+
     <div class="stage">
         <!-- Left: Quill and inkwell -->
         <div class="figure" id="figBooks">
-            <button class="desktop-icon" id="contactBtn" type="button">
-                <img src="assets/book-navy.svg" alt="" draggable="false">
-                <span class="icon-caption">Contact</span>
-            </button>
-            <button class="desktop-icon" id="aboutBtn" type="button">
-                <img src="assets/book-gold.svg" alt="" draggable="false">
-                <span class="icon-caption">About</span>
-            </button>
             <img src="assets/quill.png" alt="Quill and inkwell" class="quill-img">
         </div>
 
-        <!-- Right: Raven (analogous to angel) -->
+        <!-- Right: Raven -->
         <div class="figure" id="figRaven">
-            <button class="desktop-icon" id="browseBtn" type="button">
-                <img src="assets/book-burgundy.svg" alt="" draggable="false">
-                <span class="icon-caption">Browse</span>
-            </button>
-            <button class="desktop-icon" id="eventsBtn" type="button">
-                <img src="assets/book-green.svg" alt="" draggable="false">
-                <span class="icon-caption">Events</span>
-            </button>
-            <button class="desktop-icon" id="newsletterBtn" type="button">
-                <img src="assets/book-brown.svg" alt="" draggable="false">
-                <span class="icon-caption">Newsletter</span>
-            </button>
             <img src="assets/raven.png" alt="Raven silhouette" class="raven-img">
         </div>
     </div>
@@ -345,9 +369,6 @@
 
     <script>
 (function() {
-    const figBooks = document.getElementById('figBooks');
-    const figRaven = document.getElementById('figRaven');
-
     // Buttons
     const contactBtn = document.getElementById('contactBtn');
     const aboutBtn = document.getElementById('aboutBtn');
@@ -381,45 +402,6 @@
 
     // Web3Forms - Replace with your key from https://web3forms.com (and update mailTo value)
     const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
-
-    const ICON_SPACING = 14;
-
-    function positionAllIcons() {
-        if (!figBooks || !figRaven) return;
-        const figBooksRect = figBooks.getBoundingClientRect();
-        const figRavenRect = figRaven.getBoundingClientRect();
-
-        var centerX = window.innerWidth / 2;
-        var centerY = window.innerHeight / 2 - window.innerHeight * 0.1;
-        var eventsLeft = centerX - (eventsBtn ? eventsBtn.offsetWidth / 2 : 0);
-        var baseY = centerY - (eventsBtn ? eventsBtn.offsetHeight / 2 : 0) + window.innerHeight * 0.1;
-        var vh = window.innerHeight;
-
-        function placeAt(btn, parentRect, x, yOffset) {
-            if (!btn) return;
-            var y = baseY + (yOffset || 0);
-            btn.style.left = (x - parentRect.left) + 'px';
-            btn.style.top = (y - parentRect.top) + 'px';
-        }
-
-        var browseLeft = eventsLeft - ICON_SPACING - (browseBtn ? browseBtn.offsetWidth : 0);
-        var aboutLeft = browseLeft - ICON_SPACING - (aboutBtn ? aboutBtn.offsetWidth : 0);
-        var newsletterLeft = eventsLeft + (eventsBtn ? eventsBtn.offsetWidth : 0) + ICON_SPACING;
-        var contactLeft = newsletterLeft + (newsletterBtn ? newsletterBtn.offsetWidth : 0) + ICON_SPACING;
-
-        var aboutY = -vh * 0.2;
-        placeAt(aboutBtn, figBooksRect, aboutLeft, aboutY);
-        placeAt(browseBtn, figRavenRect, browseLeft, aboutY + vh * 0.15);
-        placeAt(eventsBtn, figRavenRect, eventsLeft, aboutY + vh * 0.3);
-        placeAt(newsletterBtn, figRavenRect, newsletterLeft, aboutY + vh * 0.45);
-        placeAt(contactBtn, figBooksRect, contactLeft, aboutY + vh * 0.6);
-    }
-
-    function positionContactBtn() { positionAllIcons(); }
-    function positionAboutBtn() { positionAllIcons(); }
-    function positionBrowseBtn() { positionAllIcons(); }
-    function positionEventsBtn() { positionAllIcons(); }
-    function positionNewsletterBtn() { positionAllIcons(); }
 
     function openWindow(win, btn) {
         if (!win) return;
@@ -487,51 +469,27 @@
         mailSendBtn.textContent = 'Send';
     }
 
-    const DRAG_THRESHOLD_PX = 10;
-    let lastOpenedFromTap = 0;
-    let lastDragEndedAt = 0;
-
-    function makeDraggable(el, handle, onTap) {
+    function makeDraggable(el, handle) {
         handle = handle || el;
-        let isActive = false, dragStarted = false;
+        let isActive = false;
         let startX, startY, origX, origY;
         function onStart(e) {
-            if (e.target.tagName === 'BUTTON' && e.target !== handle && e.target !== el) return;
+            if (e.target.closest('.app-window-close')) return;
             isActive = true;
             const t = e.touches ? e.touches[0] : e;
             startX = t.clientX; startY = t.clientY;
             const r = el.getBoundingClientRect();
             origX = r.left; origY = r.top;
-            dragStarted = false;
             e.preventDefault();
         }
         function onMove(e) {
             if (!isActive) return;
             const t = e.touches ? e.touches[0] : e;
-            const dx = t.clientX - startX, dy = t.clientY - startY;
-            if (!dragStarted && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
-                dragStarted = true;
-                el.style.position = 'fixed';
-                el.style.left = origX + 'px';
-                el.style.top = origY + 'px';
-                el.style.margin = '0';
-            }
-            if (dragStarted) {
-                el.style.left = (origX + dx) + 'px';
-                el.style.top = (origY + dy) + 'px';
-                if (e.touches) e.preventDefault();
-            }
+            el.style.left = (origX + t.clientX - startX) + 'px';
+            el.style.top = (origY + t.clientY - startY) + 'px';
+            if (e.touches) e.preventDefault();
         }
-        function onEnd(e) {
-            if (!isActive) return;
-            if (e.type === 'touchend' && onTap && !dragStarted) {
-                onTap();
-                lastOpenedFromTap = Date.now();
-            }
-            if (dragStarted) lastDragEndedAt = Date.now();
-            isActive = false;
-            dragStarted = false;
-        }
+        function onEnd() { isActive = false; }
         handle.addEventListener('mousedown', onStart);
         handle.addEventListener('touchstart', onStart, { passive: false });
         document.addEventListener('mousemove', onMove);
@@ -541,61 +499,28 @@
     }
 
     function init() {
-        positionContactBtn();
-        positionAboutBtn();
-        positionBrowseBtn();
-        positionEventsBtn();
-        positionNewsletterBtn();
+        aboutBtn.addEventListener('click', function() { openWindow(aboutWindow, aboutBtn); });
+        browseBtn.addEventListener('click', function() { openWindow(browseWindow, browseBtn); });
+        eventsBtn.addEventListener('click', function() { openWindow(eventsWindow, eventsBtn); });
+        newsletterBtn.addEventListener('click', function() { openWindow(newsletterWindow, newsletterBtn); });
+        contactBtn.addEventListener('click', function() { openWindow(contactWindow, contactBtn); });
 
-        makeDraggable(contactBtn, null, function() {
-            if (Date.now() - lastOpenedFromTap < 400) return;
-            if (Date.now() - lastDragEndedAt < 100) return;
-            openWindow(contactWindow, contactBtn);
-        });
         makeDraggable(contactWindow, contactWindowHeader);
         contactWindowClose.addEventListener('click', function() { closeWindow(contactWindow); mailStatus.textContent = ''; mailStatus.className = 'mail-status'; });
 
-        makeDraggable(aboutBtn, null, function() {
-            if (Date.now() - lastOpenedFromTap < 400) return;
-            if (Date.now() - lastDragEndedAt < 100) return;
-            openWindow(aboutWindow, aboutBtn);
-        });
         makeDraggable(aboutWindow, aboutWindowHeader);
         aboutWindowClose.addEventListener('click', function() { closeWindow(aboutWindow); });
 
-        makeDraggable(browseBtn, null, function() {
-            if (Date.now() - lastOpenedFromTap < 400) return;
-            if (Date.now() - lastDragEndedAt < 100) return;
-            openWindow(browseWindow, browseBtn);
-        });
         makeDraggable(browseWindow, browseWindowHeader);
         browseWindowClose.addEventListener('click', function() { closeWindow(browseWindow); });
 
-        makeDraggable(eventsBtn, null, function() {
-            if (Date.now() - lastOpenedFromTap < 400) return;
-            if (Date.now() - lastDragEndedAt < 100) return;
-            openWindow(eventsWindow, eventsBtn);
-        });
         makeDraggable(eventsWindow, eventsWindowHeader);
         eventsWindowClose.addEventListener('click', function() { closeWindow(eventsWindow); });
 
-        makeDraggable(newsletterBtn, null, function() {
-            if (Date.now() - lastOpenedFromTap < 400) return;
-            if (Date.now() - lastDragEndedAt < 100) return;
-            openWindow(newsletterWindow, newsletterBtn);
-        });
         makeDraggable(newsletterWindow, newsletterWindowHeader);
         newsletterWindowClose.addEventListener('click', function() { closeWindow(newsletterWindow); });
 
         mailSendBtn.addEventListener('click', sendEmail);
-
-        window.addEventListener('resize', function() {
-            positionContactBtn();
-            positionAboutBtn();
-            positionBrowseBtn();
-            positionEventsBtn();
-            positionNewsletterBtn();
-        });
     }
 
     if (document.readyState === 'loading') {
