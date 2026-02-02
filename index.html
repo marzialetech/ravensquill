@@ -174,13 +174,11 @@
             color: #c9a227;
             padding: 8px 12px;
             font-size: 14px;
-            cursor: grab;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #5c5240;
         }
-        .app-window-header:active { cursor: grabbing; }
         .app-window-close {
             background: #3d3528;
             color: #e8e0d4;
@@ -416,8 +414,11 @@
         quillImg.style.top = (newsletterCy - quillImg.offsetHeight / 2) + 'px';
     }
 
+    var allWindows = [];
+
     function openWindow(win, btn) {
         if (!win) return;
+        allWindows.forEach(function(w) { if (w !== win) w.classList.remove('open'); });
         win.style.left = Math.max(10, (window.innerWidth - 360) / 2) + 'px';
         win.style.top = Math.max(10, (window.innerHeight - 300) / 2) + 'px';
         win.classList.add('open');
@@ -482,35 +483,6 @@
         mailSendBtn.textContent = 'Send';
     }
 
-    function makeDraggable(el, handle) {
-        handle = handle || el;
-        let isActive = false;
-        let startX, startY, origX, origY;
-        function onStart(e) {
-            if (e.target.closest('.app-window-close')) return;
-            isActive = true;
-            const t = e.touches ? e.touches[0] : e;
-            startX = t.clientX; startY = t.clientY;
-            const r = el.getBoundingClientRect();
-            origX = r.left; origY = r.top;
-            e.preventDefault();
-        }
-        function onMove(e) {
-            if (!isActive) return;
-            const t = e.touches ? e.touches[0] : e;
-            el.style.left = (origX + t.clientX - startX) + 'px';
-            el.style.top = (origY + t.clientY - startY) + 'px';
-            if (e.touches) e.preventDefault();
-        }
-        function onEnd() { isActive = false; }
-        handle.addEventListener('mousedown', onStart);
-        handle.addEventListener('touchstart', onStart, { passive: false });
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('touchmove', onMove, { passive: false });
-        document.addEventListener('mouseup', onEnd);
-        document.addEventListener('touchend', onEnd);
-    }
-
     document.addEventListener('touchmove', function(e) {
         var target = e.target;
         while (target && target !== document.body) {
@@ -521,25 +493,18 @@
     }, { passive: false });
 
     function init() {
+        allWindows = [contactWindow, browseWindow, eventsWindow, aboutWindow, newsletterWindow];
+
         aboutBtn.addEventListener('click', function() { openWindow(aboutWindow, aboutBtn); });
         browseBtn.addEventListener('click', function() { openWindow(browseWindow, browseBtn); });
         eventsBtn.addEventListener('click', function() { openWindow(eventsWindow, eventsBtn); });
         newsletterBtn.addEventListener('click', function() { openWindow(newsletterWindow, newsletterBtn); });
         contactBtn.addEventListener('click', function() { openWindow(contactWindow, contactBtn); });
 
-        makeDraggable(contactWindow, contactWindowHeader);
         contactWindowClose.addEventListener('click', function() { closeWindow(contactWindow); mailStatus.textContent = ''; mailStatus.className = 'mail-status'; });
-
-        makeDraggable(aboutWindow, aboutWindowHeader);
         aboutWindowClose.addEventListener('click', function() { closeWindow(aboutWindow); });
-
-        makeDraggable(browseWindow, browseWindowHeader);
         browseWindowClose.addEventListener('click', function() { closeWindow(browseWindow); });
-
-        makeDraggable(eventsWindow, eventsWindowHeader);
         eventsWindowClose.addEventListener('click', function() { closeWindow(eventsWindow); });
-
-        makeDraggable(newsletterWindow, newsletterWindowHeader);
         newsletterWindowClose.addEventListener('click', function() { closeWindow(newsletterWindow); });
 
         mailSendBtn.addEventListener('click', sendEmail);
