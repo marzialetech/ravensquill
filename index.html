@@ -188,9 +188,8 @@
             font-family: inherit;
             display: none;
             font-size: 14px;
-            flex-direction: column;
         }
-        .app-window.open { display: flex; }
+        .app-window.open { display: block; }
         .app-window-header {
             background: linear-gradient(180deg, #2c2416 0%, #1a1510 100%);
             color: #c9a227;
@@ -219,8 +218,8 @@
             background: #2c2416;
             border: 1px solid #1a1510;
             margin: 2px;
-            flex: 1;
-            min-height: 0;
+            min-height: 120px;
+            max-height: 70vh;
             overflow-y: auto;
         }
         .app-window-body p { margin: 0 0 12px 0; line-height: 1.6; }
@@ -558,11 +557,7 @@
         allWindows.forEach(function(w) { if (w !== win) w.classList.remove('open'); });
         updateWindowWidths();
         var topUnderHeader = window.innerHeight * 0.20 + 36;
-        var cr = contactBtn.getBoundingClientRect();
-        var contactCy = cr.top + cr.height / 2;
-        var winHeight = contactCy - topUnderHeader;
         win.style.top = topUnderHeader + 'px';
-        win.style.height = Math.max(120, winHeight) + 'px';
         win.classList.add('open');
         requestAnimationFrame(function() {
             win.style.left = Math.max(10, (window.innerWidth - win.offsetWidth) / 2) + 'px';
