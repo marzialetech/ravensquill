@@ -540,7 +540,7 @@
         if (!el || !dot || !text) return;
         var s = getStoreStatus();
         dot.className = 'store-status-dot ' + (s.open ? 'open' : 'closed');
-        text.textContent = s.text;
+        text.textContent = s.text + ' (Open M-F 9-5)';
     }
 
     function positionFigures() {
