@@ -497,8 +497,9 @@
     function openWindow(win, btn) {
         if (!win) return;
         allWindows.forEach(function(w) { if (w !== win) w.classList.remove('open'); });
+        var topUnderHeader = window.innerHeight * 0.20;
         win.style.left = Math.max(10, (window.innerWidth - 360) / 2) + 'px';
-        win.style.top = Math.max(10, (window.innerHeight - 300) / 2) + 'px';
+        win.style.top = topUnderHeader + 'px';
         win.classList.add('open');
         requestAnimationFrame(function() {
             win.style.left = Math.max(10, (window.innerWidth - win.offsetWidth) / 2) + 'px';
