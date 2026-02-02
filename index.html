@@ -406,6 +406,7 @@
         var br = browseBtn.getBoundingClientRect();
         var er = eventsBtn.getBoundingClientRect();
         var aboutCx = ar.left + ar.width / 2;
+        var browseCx = br.left + br.width / 2;
         var newsletterCx = nr.left + nr.width / 2;
         var browseCy = br.top + br.height / 2;
         var eventsCy = er.top + er.height / 2;
@@ -413,7 +414,7 @@
         ravenImg.style.left = (newsletterCx - ravenImg.offsetWidth / 2) + 'px';
         ravenImg.style.top = (browseCy - ravenImg.offsetHeight / 2) + 'px';
 
-        quillImg.style.left = (aboutCx - quillImg.offsetWidth / 2) + 'px';
+        quillImg.style.left = ((aboutCx + browseCx) / 2 - quillImg.offsetWidth / 2) + 'px';
         quillImg.style.top = (eventsCy - quillImg.offsetHeight / 2) + 'px';
     }
 
