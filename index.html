@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Raven's Quill Bookstore</title>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            font-family: "Libre Baskerville", "Cormorant Garamond", Georgia, serif;
+        }
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: #2c2416;
+            background-image: 
+                radial-gradient(ellipse at 20% 80%, rgba(61, 41, 20, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(44, 36, 22, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #3d2a14 0%, #2c2416 40%, #1a1510 100%);
+            color: #e8e0d4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: clamp(1rem, 4vw, 2.5rem) clamp(0.5rem, 3vw, 1.5rem);
+        }
+        .header img {
+            display: block;
+            max-width: min(90vw, 320px);
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        }
+        .stage {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(2rem, 5vw, 4rem);
+            justify-items: center;
+            align-items: start;
+            width: 100%;
+            max-width: 2400px;
+            padding: clamp(1.5rem, 6vw, 4rem) clamp(0.5rem, 3vw, 1.5rem) clamp(1rem, 2vw, 1.5rem);
+            margin: -8vh auto 0 auto;
+        }
+        .stage .figure {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .stage .figure:nth-child(1) {
+            margin-top: calc(clamp(4rem, 12vw, 8rem) + 18vh);
+        }
+        .stage .figure:nth-child(2) {
+            margin-top: 0;
+        }
+        .stage .figure svg {
+            display: block;
+            width: 100%;
+            max-width: min(45vw, 500px);
+            height: auto;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        }
+        @media (max-width: 700px) {
+            body { padding-top: 12vh; }
+            .header { padding: clamp(0.5rem, 2vw, 1rem); }
+            .stage {
+                gap: clamp(0.25rem, 1vw, 0.5rem);
+                padding: 0 clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
+                align-items: start;
+                margin-top: 0;
+            }
+            .stage .figure svg { max-width: 55vw; }
+            .stage .figure:nth-child(1) {
+                align-self: center;
+                margin-top: clamp(3rem, 10vw, 6rem);
+            }
+            .stage .figure:nth-child(2) {
+                align-self: start;
+                margin-top: clamp(0.75rem, 3vw, 1.5rem);
+            }
+        }
+
+        /* Desktop Icons */
+        .desktop-icon {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: grab;
+            user-select: none;
+            z-index: 100;
+            width: clamp(3rem, 8vw, 4.5rem);
+        }
+        .desktop-icon:active { cursor: grabbing; }
+        .desktop-icon img,
+        .desktop-icon svg {
+            display: block;
+            width: 100%;
+            height: clamp(2.5rem, 6vw, 3.5rem);
+            object-fit: contain;
+        }
+        .desktop-icon .icon-caption {
+            font-family: "Libre Baskerville", Georgia, serif;
+            font-size: clamp(0.6rem, 1.4vw, 0.75rem);
+            font-weight: 400;
+            color: #e8e0d4;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        /* Windows - dark academia style */
+        .app-window {
+            position: fixed;
+            background: #3d3528;
+            color: #e8e0d4;
+            border: 2px solid #5c5240;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            z-index: 200;
+            min-width: 300px;
+            max-width: 90vw;
+            font-family: inherit;
+            display: none;
+            font-size: 14px;
+        }
+        .app-window.open { display: block; }
+        .app-window-header {
+            background: linear-gradient(180deg, #2c2416 0%, #1a1510 100%);
+            color: #c9a227;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #5c5240;
+        }
+        .app-window-header:active { cursor: grabbing; }
+        .app-window-close {
+            background: #3d3528;
+            color: #e8e0d4;
+            border: 1px solid #5c5240;
+            font-size: 14px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px 8px;
+            font-family: inherit;
+        }
+        .app-window-close:hover { background: #4d4538; color: #fff; }
+        .app-window-body {
+            padding: 16px;
+            background: #2c2416;
+            border: 1px solid #1a1510;
+            margin: 2px;
+            min-height: 120px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .app-window-body p { margin: 0 0 12px 0; line-height: 1.6; }
+        .app-window-body a { color: #c9a227; text-decoration: underline; }
+        .app-window-body a:hover { color: #e8d48a; }
+
+        /* Contact form */
+        .mail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .mail-row label { min-width: 60px; font-size: 13px; }
+        .mail-row input, .mail-row textarea {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #5c5240;
+            background: #1a1510;
+            color: #e8e0d4;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        .mail-body-row { margin-top: 10px; }
+        .mail-body-row textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 8px;
+            border: 1px solid #5c5240;
+            background: #1a1510;
+            color: #e8e0d4;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+        }
+        .mail-send-btn {
+            padding: 6px 16px;
+            background: #2c2416;
+            color: #c9a227;
+            border: 1px solid #5c5240;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+        }
+        .mail-send-btn:hover { background: #3d3528; color: #e8d48a; }
+        .mail-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .mail-status { margin-top: 10px; font-size: 12px; }
+        .mail-status.success { color: #7cb342; }
+        .mail-status.error { color: #c62828; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="assets/logo.png" alt="The Raven's Quill Bookstore">
+    </div>
+
+    <div class="stage">
+        <!-- Left: Stack of books (analogous to man on boat) -->
+        <div class="figure" id="figBooks">
+            <button class="desktop-icon" id="contactBtn" type="button">
+                <img src="assets/book-navy.svg" alt="" draggable="false">
+                <span class="icon-caption">Contact</span>
+            </button>
+            <button class="desktop-icon" id="aboutBtn" type="button">
+                <img src="assets/book-gold.svg" alt="" draggable="false">
+                <span class="icon-caption">About</span>
+            </button>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none" role="img" aria-label="Stack of books">
+                <defs>
+                    <linearGradient id="book1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3d2914"/><stop offset="30%" stop-color="#5c3d1f"/><stop offset="100%" stop-color="#3d2914"/></linearGradient>
+                    <linearGradient id="book2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="30%" stop-color="#2d4a7a"/><stop offset="100%" stop-color="#1e3a5f"/></linearGradient>
+                    <linearGradient id="book3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#722F37"/><stop offset="30%" stop-color="#8a3d47"/><stop offset="100%" stop-color="#722F37"/></linearGradient>
+                </defs>
+                <rect x="20" y="80" width="100" height="24" rx="2" fill="url(#book1)" stroke="#2a1c0e"/>
+                <rect x="20" y="80" width="12" height="24" fill="#332210"/>
+                <rect x="35" y="65" width="90" height="22" rx="2" fill="url(#book2)" stroke="#0f1f33"/>
+                <rect x="35" y="65" width="10" height="22" fill="#152a47"/>
+                <rect x="50" y="50" width="95" height="20" rx="2" fill="url(#book3)" stroke="#4a1f25"/>
+                <rect x="50" y="50" width="10" height="20" fill="#5a252c"/>
+            </svg>
+        </div>
+
+        <!-- Right: Raven (analogous to angel) -->
+        <div class="figure" id="figRaven">
+            <button class="desktop-icon" id="browseBtn" type="button">
+                <img src="assets/book-burgundy.svg" alt="" draggable="false">
+                <span class="icon-caption">Browse</span>
+            </button>
+            <button class="desktop-icon" id="eventsBtn" type="button">
+                <img src="assets/book-green.svg" alt="" draggable="false">
+                <span class="icon-caption">Events</span>
+            </button>
+            <button class="desktop-icon" id="newsletterBtn" type="button">
+                <img src="assets/book-brown.svg" alt="" draggable="false">
+                <span class="icon-caption">Newsletter</span>
+            </button>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none" role="img" aria-label="Raven silhouette">
+                <path d="M60 10 C45 25 35 45 35 60 C35 75 45 85 60 90 C75 85 85 75 85 60 C85 45 75 25 60 10 Z" fill="#0d0d0d"/>
+                <path d="M55 20 L55 50 M65 20 L65 50 M50 35 Q60 45 70 35" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+                <path d="M30 70 Q45 75 55 70 Q50 85 35 88 Z" fill="#0d0d0d"/>
+                <path d="M90 70 Q75 75 65 70 Q70 85 85 88 Z" fill="#0d0d0d"/>
+                <ellipse cx="60" cy="38" rx="3" ry="4" fill="#2d1515"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Contact Window -->
+    <div class="app-window" id="contactWindow">
+        <div class="app-window-header" id="contactWindowHeader">
+            <span>Contact</span>
+            <button class="app-window-close" id="contactWindowClose">&times;</button>
+        </div>
+        <div class="app-window-body">
+            <div class="mail-row">
+                <label for="mailTo">To:</label>
+                <input type="email" id="mailTo" value="contact@ravensquill.example" readonly>
+            </div>
+            <div class="mail-row">
+                <label for="mailFrom">From:</label>
+                <input type="email" id="mailFrom" placeholder="your@email.com" required>
+            </div>
+            <div class="mail-row">
+                <label for="mailSubject">Subject:</label>
+                <input type="text" id="mailSubject" placeholder="Subject">
+                <button class="mail-send-btn" id="mailSendBtn">Send</button>
+            </div>
+            <div class="mail-body-row">
+                <textarea id="mailBody" placeholder="Write your message here..."></textarea>
+            </div>
+            <div class="mail-status" id="mailStatus"></div>
+        </div>
+    </div>
+
+    <!-- Browse Window -->
+    <div class="app-window" id="browseWindow">
+        <div class="app-window-header" id="browseWindowHeader">
+            <span>Browse Catalog</span>
+            <button class="app-window-close" id="browseWindowClose">&times;</button>
+        </div>
+        <div class="app-window-body">
+            <p>Our catalog is coming soon. In the meantime, visit us in person or reach out via Contact.</p>
+            <p><a href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" target="_blank" rel="noopener">Follow us on Facebook</a> for updates.</p>
+        </div>
+    </div>
+
+    <!-- Events Window -->
+    <div class="app-window" id="eventsWindow">
+        <div class="app-window-header" id="eventsWindowHeader">
+            <span>Events &amp; Readings</span>
+            <button class="app-window-close" id="eventsWindowClose">&times;</button>
+        </div>
+        <div class="app-window-body">
+            <p>Upcoming events and author readings will be posted here.</p>
+            <p><a href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" target="_blank" rel="noopener">Check our Facebook page</a> for the latest.</p>
+        </div>
+    </div>
+
+    <!-- About Window -->
+    <div class="app-window" id="aboutWindow">
+        <div class="app-window-header" id="aboutWindowHeader">
+            <span>About</span>
+            <button class="app-window-close" id="aboutWindowClose">&times;</button>
+        </div>
+        <div class="app-window-body">
+            <p><strong>The Raven's Quill Bookstore</strong> — a haven for readers seeking the pensive, the gothic, and the timeless.</p>
+            <p>We curate a selection of books that invite contemplation, from dark academia to classic literature.</p>
+            <p><a href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" target="_blank" rel="noopener">Find us on Facebook</a></p>
+        </div>
+    </div>
+
+    <!-- Newsletter Window -->
+    <div class="app-window" id="newsletterWindow">
+        <div class="app-window-header" id="newsletterWindowHeader">
+            <span>Newsletter</span>
+            <button class="app-window-close" id="newsletterWindowClose">&times;</button>
+        </div>
+        <div class="app-window-body">
+            <p>Subscribe to our newsletter for updates on new arrivals, events, and reading recommendations.</p>
+            <p>Sign-up coming soon. For now, <a href="https://www.facebook.com/people/The-Ravens-Quill-Bookstore/61583263061310/" target="_blank" rel="noopener">follow us on Facebook</a> to stay in touch.</p>
+        </div>
+    </div>
+
+    <script>
+(function() {
+    const figBooks = document.getElementById('figBooks');
+    const figRaven = document.getElementById('figRaven');
+
+    // Buttons
+    const contactBtn = document.getElementById('contactBtn');
+    const aboutBtn = document.getElementById('aboutBtn');
+    const browseBtn = document.getElementById('browseBtn');
+    const eventsBtn = document.getElementById('eventsBtn');
+    const newsletterBtn = document.getElementById('newsletterBtn');
+
+    // Windows
+    const contactWindow = document.getElementById('contactWindow');
+    const contactWindowHeader = document.getElementById('contactWindowHeader');
+    const contactWindowClose = document.getElementById('contactWindowClose');
+    const browseWindow = document.getElementById('browseWindow');
+    const browseWindowHeader = document.getElementById('browseWindowHeader');
+    const browseWindowClose = document.getElementById('browseWindowClose');
+    const eventsWindow = document.getElementById('eventsWindow');
+    const eventsWindowHeader = document.getElementById('eventsWindowHeader');
+    const eventsWindowClose = document.getElementById('eventsWindowClose');
+    const aboutWindow = document.getElementById('aboutWindow');
+    const aboutWindowHeader = document.getElementById('aboutWindowHeader');
+    const aboutWindowClose = document.getElementById('aboutWindowClose');
+    const newsletterWindow = document.getElementById('newsletterWindow');
+    const newsletterWindowHeader = document.getElementById('newsletterWindowHeader');
+    const newsletterWindowClose = document.getElementById('newsletterWindowClose');
+
+    // Contact form
+    const mailFrom = document.getElementById('mailFrom');
+    const mailSubject = document.getElementById('mailSubject');
+    const mailBody = document.getElementById('mailBody');
+    const mailSendBtn = document.getElementById('mailSendBtn');
+    const mailStatus = document.getElementById('mailStatus');
+
+    // Web3Forms - Replace with your key from https://web3forms.com (and update mailTo value)
+    const WEB3FORMS_ACCESS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY';
+
+    function positionContactBtn() {
+        if (!contactBtn || !figBooks) return;
+        const svg = figBooks.querySelector('svg');
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const figRect = figBooks.getBoundingClientRect();
+        const targetX = rect.left + rect.width * 0.25 - figRect.left - (contactBtn.offsetWidth / 2);
+        const targetY = rect.top + rect.height * 0.5 - figRect.top - (contactBtn.offsetHeight / 2) - 20;
+        contactBtn.style.left = targetX + 'px';
+        contactBtn.style.top = targetY + 'px';
+    }
+
+    function positionAboutBtn() {
+        if (!aboutBtn || !figBooks) return;
+        const svg = figBooks.querySelector('svg');
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const figRect = figBooks.getBoundingClientRect();
+        const targetX = rect.left + rect.width * 0.7 - figRect.left - (aboutBtn.offsetWidth / 2);
+        const targetY = rect.top + rect.height * 0.3 - figRect.top - (aboutBtn.offsetHeight / 2);
+        aboutBtn.style.left = targetX + 'px';
+        aboutBtn.style.top = targetY + 'px';
+    }
+
+    function positionBrowseBtn() {
+        if (!browseBtn || !figRaven) return;
+        const svg = figRaven.querySelector('svg');
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const figRect = figRaven.getBoundingClientRect();
+        const targetX = rect.left + rect.width * 0.2 - figRect.left - (browseBtn.offsetWidth / 2);
+        const targetY = rect.top + rect.height * 0.4 - figRect.top - (browseBtn.offsetHeight / 2);
+        browseBtn.style.left = targetX + 'px';
+        browseBtn.style.top = targetY + 'px';
+    }
+
+    function positionEventsBtn() {
+        if (!eventsBtn || !figRaven) return;
+        const svg = figRaven.querySelector('svg');
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const figRect = figRaven.getBoundingClientRect();
+        const targetX = rect.left + rect.width * 0.6 - figRect.left - (eventsBtn.offsetWidth / 2);
+        const targetY = rect.top + rect.height * 0.25 - figRect.top - (eventsBtn.offsetHeight / 2);
+        eventsBtn.style.left = targetX + 'px';
+        eventsBtn.style.top = targetY + 'px';
+    }
+
+    function positionNewsletterBtn() {
+        if (!newsletterBtn || !figRaven) return;
+        const svg = figRaven.querySelector('svg');
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        const figRect = figRaven.getBoundingClientRect();
+        const targetX = rect.left + rect.width * 0.85 - figRect.left - (newsletterBtn.offsetWidth / 2);
+        const targetY = rect.top + rect.height * 0.6 - figRect.top - (newsletterBtn.offsetHeight / 2);
+        newsletterBtn.style.left = targetX + 'px';
+        newsletterBtn.style.top = targetY + 'px';
+    }
+
+    function openWindow(win, btn) {
+        if (!win) return;
+        win.style.left = Math.max(10, (window.innerWidth - 360) / 2) + 'px';
+        win.style.top = Math.max(10, (window.innerHeight - 300) / 2) + 'px';
+        win.classList.add('open');
+        requestAnimationFrame(function() {
+            win.style.left = Math.max(10, (window.innerWidth - win.offsetWidth) / 2) + 'px';
+        });
+    }
+
+    function closeWindow(win) {
+        if (win) win.classList.remove('open');
+    }
+
+    async function sendEmail() {
+        const from = mailFrom.value.trim();
+        const subject = mailSubject.value.trim();
+        const body = mailBody.value.trim();
+        const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(from);
+        if (!emailValid || !subject || !body) {
+            mailFrom.dispatchEvent(new Event('input'));
+            return;
+        }
+        mailSendBtn.disabled = true;
+        mailSendBtn.textContent = 'Sending...';
+        mailStatus.textContent = '';
+        mailStatus.className = 'mail-status';
+
+        if (WEB3FORMS_ACCESS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') {
+            mailStatus.textContent = 'Configure Web3Forms key and contact email to enable sending.';
+            mailStatus.className = 'mail-status error';
+            mailSendBtn.disabled = false;
+            mailSendBtn.textContent = 'Send';
+            return;
+        }
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: subject,
+                    from_name: "Raven's Quill Website",
+                    message: 'Reply to ' + from + '\n\n' + body
+                })
+            });
+            const result = await response.json();
+            if (result.success) {
+                mailStatus.textContent = 'Sent!';
+                mailStatus.className = 'mail-status success';
+                mailFrom.value = '';
+                mailSubject.value = '';
+                mailBody.value = '';
+            } else {
+                mailStatus.textContent = 'Failed to send. Please try again.';
+                mailStatus.className = 'mail-status error';
+            }
+        } catch (err) {
+            mailStatus.textContent = 'Failed to send. Please try again.';
+            mailStatus.className = 'mail-status error';
+        }
+        mailSendBtn.disabled = false;
+        mailSendBtn.textContent = 'Send';
+    }
+
+    const DRAG_THRESHOLD_PX = 10;
+    let lastOpenedFromTap = 0;
+    let lastDragEndedAt = 0;
+
+    function makeDraggable(el, handle, onTap) {
+        handle = handle || el;
+        let isActive = false, dragStarted = false;
+        let startX, startY, origX, origY;
+        function onStart(e) {
+            if (e.target.tagName === 'BUTTON' && e.target !== handle && e.target !== el) return;
+            isActive = true;
+            const t = e.touches ? e.touches[0] : e;
+            startX = t.clientX; startY = t.clientY;
+            const r = el.getBoundingClientRect();
+            origX = r.left; origY = r.top;
+            dragStarted = false;
+            e.preventDefault();
+        }
+        function onMove(e) {
+            if (!isActive) return;
+            const t = e.touches ? e.touches[0] : e;
+            const dx = t.clientX - startX, dy = t.clientY - startY;
+            if (!dragStarted && (Math.abs(dx) > DRAG_THRESHOLD_PX || Math.abs(dy) > DRAG_THRESHOLD_PX)) {
+                dragStarted = true;
+                el.style.position = 'fixed';
+                el.style.left = origX + 'px';
+                el.style.top = origY + 'px';
+                el.style.margin = '0';
+            }
+            if (dragStarted) {
+                el.style.left = (origX + dx) + 'px';
+                el.style.top = (origY + dy) + 'px';
+                if (e.touches) e.preventDefault();
+            }
+        }
+        function onEnd(e) {
+            if (!isActive) return;
+            if (e.type === 'touchend' && onTap && !dragStarted) {
+                onTap();
+                lastOpenedFromTap = Date.now();
+            }
+            if (dragStarted) lastDragEndedAt = Date.now();
+            isActive = false;
+            dragStarted = false;
+        }
+        handle.addEventListener('mousedown', onStart);
+        handle.addEventListener('touchstart', onStart, { passive: false });
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchend', onEnd);
+    }
+
+    function init() {
+        positionContactBtn();
+        positionAboutBtn();
+        positionBrowseBtn();
+        positionEventsBtn();
+        positionNewsletterBtn();
+
+        makeDraggable(contactBtn, null, function() {
+            if (Date.now() - lastOpenedFromTap < 400) return;
+            if (Date.now() - lastDragEndedAt < 100) return;
+            openWindow(contactWindow, contactBtn);
+        });
+        makeDraggable(contactWindow, contactWindowHeader);
+        contactWindowClose.addEventListener('click', function() { closeWindow(contactWindow); mailStatus.textContent = ''; mailStatus.className = 'mail-status'; });
+
+        makeDraggable(aboutBtn, null, function() {
+            if (Date.now() - lastOpenedFromTap < 400) return;
+            if (Date.now() - lastDragEndedAt < 100) return;
+            openWindow(aboutWindow, aboutBtn);
+        });
+        makeDraggable(aboutWindow, aboutWindowHeader);
+        aboutWindowClose.addEventListener('click', function() { closeWindow(aboutWindow); });
+
+        makeDraggable(browseBtn, null, function() {
+            if (Date.now() - lastOpenedFromTap < 400) return;
+            if (Date.now() - lastDragEndedAt < 100) return;
+            openWindow(browseWindow, browseBtn);
+        });
+        makeDraggable(browseWindow, browseWindowHeader);
+        browseWindowClose.addEventListener('click', function() { closeWindow(browseWindow); });
+
+        makeDraggable(eventsBtn, null, function() {
+            if (Date.now() - lastOpenedFromTap < 400) return;
+            if (Date.now() - lastDragEndedAt < 100) return;
+            openWindow(eventsWindow, eventsBtn);
+        });
+        makeDraggable(eventsWindow, eventsWindowHeader);
+        eventsWindowClose.addEventListener('click', function() { closeWindow(eventsWindow); });
+
+        makeDraggable(newsletterBtn, null, function() {
+            if (Date.now() - lastOpenedFromTap < 400) return;
+            if (Date.now() - lastDragEndedAt < 100) return;
+            openWindow(newsletterWindow, newsletterBtn);
+        });
+        makeDraggable(newsletterWindow, newsletterWindowHeader);
+        newsletterWindowClose.addEventListener('click', function() { closeWindow(newsletterWindow); });
+
+        mailSendBtn.addEventListener('click', sendEmail);
+
+        window.addEventListener('resize', function() {
+            positionContactBtn();
+            positionAboutBtn();
+            positionBrowseBtn();
+            positionEventsBtn();
+            positionNewsletterBtn();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+    </script>
+</body>
+</html>
