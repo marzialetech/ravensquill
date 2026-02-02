@@ -36,9 +36,10 @@
             right: 0;
             height: 52px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 2px;
             z-index: 45;
             font-size: 14px;
             color: #e8e0d4;
@@ -52,11 +53,10 @@
         }
         .store-status-dot.open { background: #4caf50; }
         .store-status-dot.closed { background: #c62828; }
-        .store-status-text {
+        .store-status-title-row {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 8px;
         }
         .store-status-subtitle {
             font-size: 11px;
@@ -366,11 +366,11 @@
     </div>
 
     <div class="store-status" id="storeStatus">
-        <span class="store-status-dot" id="storeStatusDot"></span>
-        <div class="store-status-text">
+        <div class="store-status-title-row">
+            <span class="store-status-dot" id="storeStatusDot"></span>
             <span id="storeStatusText">—</span>
-            <span class="store-status-subtitle" id="storeStatusSubtitle">Open M-F 9-5</span>
         </div>
+        <span class="store-status-subtitle" id="storeStatusSubtitle">Open M-F 9-5</span>
     </div>
 
     <div class="icon-bar">
