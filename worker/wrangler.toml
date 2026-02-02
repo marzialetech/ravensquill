@@ -1,0 +1,17 @@
+name = "ravensquill-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# KV Namespace for caching inventory
+[[kv_namespaces]]
+binding = "INVENTORY_KV"
+id = "87673725960141c9b44ee2a0da40c2a0"
+
+# Environment variables (set via wrangler secret put)
+# SQUARE_ACCESS_TOKEN - set via: wrangler secret put SQUARE_ACCESS_TOKEN
+
+[vars]
+SQUARE_ENVIRONMENT = "production"
+SQUARE_APPLICATION_ID = "sq0idp-8bH62xyHS51pUY1Ie9g02A"
+SQUARE_LOCATION_ID = "L3GP3BVE8V19R"
+CORS_ORIGIN = "https://ravensquill.marziale.tech"
