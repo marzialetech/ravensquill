@@ -11,10 +11,16 @@
         html, body {
             font-family: "Libre Baskerville", "Cormorant Garamond", Georgia, serif;
         }
+        html {
+            overflow: hidden;
+            height: 100%;
+        }
         body {
             margin: 0;
-            height: 100vh;
+            height: 100%;
+            min-height: 100vh;
             overflow: hidden;
+            overscroll-behavior: none;
             background: #2c2416;
             color: #e8e0d4;
             display: flex;
@@ -526,6 +532,15 @@
         document.addEventListener('mouseup', onEnd);
         document.addEventListener('touchend', onEnd);
     }
+
+    document.addEventListener('touchmove', function(e) {
+        var target = e.target;
+        while (target && target !== document.body) {
+            if (target.classList && (target.classList.contains('app-window-body') || target.classList.contains('app-window'))) return;
+            target = target.parentElement;
+        }
+        e.preventDefault();
+    }, { passive: false });
 
     function init() {
         aboutBtn.addEventListener('click', function() { openWindow(aboutWindow, aboutBtn); });
