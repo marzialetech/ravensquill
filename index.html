@@ -401,19 +401,21 @@
     const quillImg = document.querySelector('.quill-img');
 
     function positionFigures() {
-        if (!aboutBtn || !newsletterBtn || !ravenImg || !quillImg) return;
+        if (!aboutBtn || !newsletterBtn || !browseBtn || !eventsBtn || !ravenImg || !quillImg) return;
         var ar = aboutBtn.getBoundingClientRect();
         var nr = newsletterBtn.getBoundingClientRect();
+        var br = browseBtn.getBoundingClientRect();
+        var er = eventsBtn.getBoundingClientRect();
         var aboutCx = ar.left + ar.width / 2;
-        var aboutCy = ar.top + ar.height / 2;
         var newsletterCx = nr.left + nr.width / 2;
-        var newsletterCy = nr.top + nr.height / 2;
+        var browseCy = br.top + br.height / 2;
+        var eventsCy = er.top + er.height / 2;
 
         ravenImg.style.left = (newsletterCx - ravenImg.offsetWidth / 2) + 'px';
-        ravenImg.style.top = (aboutCy - ravenImg.offsetHeight / 2) + 'px';
+        ravenImg.style.top = (browseCy - ravenImg.offsetHeight / 2) + 'px';
 
         quillImg.style.left = (aboutCx - quillImg.offsetWidth / 2) + 'px';
-        quillImg.style.top = (newsletterCy - quillImg.offsetHeight / 2) + 'px';
+        quillImg.style.top = (eventsCy - quillImg.offsetHeight / 2) + 'px';
     }
 
     var allWindows = [];
