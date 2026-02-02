@@ -415,8 +415,18 @@
         var browseCy = br.top + br.height / 2;
         var eventsCy = er.top + er.height / 2;
 
-        ravenImg.style.left = (newsletterCx - ravenImg.offsetWidth / 2) + 'px';
-        ravenImg.style.top = (browseCy - ravenImg.offsetHeight / 2) + 'px';
+        var contactCx = cr.left + cr.width / 2;
+        var aboutCy = ar.top + ar.height / 2;
+
+        var ravenTop = (browseCy + aboutCy) / 2;
+        var ravenBottom = (browseCy + eventsCy) / 2;
+        var ravenHeight = ravenBottom - ravenTop;
+        var ravenWidth = ravenHeight * (ravenImg.naturalWidth / ravenImg.naturalHeight) || ravenImg.offsetWidth;
+        ravenImg.style.height = ravenHeight + 'px';
+        ravenImg.style.width = 'auto';
+        ravenImg.style.maxWidth = 'none';
+        ravenImg.style.top = ravenTop + 'px';
+        ravenImg.style.left = (contactCx - ravenWidth) + 'px';
 
         var quillTop = (browseCy + eventsCy) / 2;
         var quillBottom = (newsletterCy + contactCy) / 2;
