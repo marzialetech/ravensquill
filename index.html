@@ -576,8 +576,8 @@
         var contactCx = cr.left + cr.width / 2;
         var aboutCy = ar.top + ar.height / 2;
 
-        var ravenTop = aboutCy;
-        var ravenBottom = (browseCy + eventsCy) / 2;
+        var ravenTop = (aboutCy + browseCy) / 2;
+        var ravenBottom = eventsCy;
         var ravenHeight = ravenBottom - ravenTop;
         var ravenWidth = ravenHeight * (ravenImg.naturalWidth / ravenImg.naturalHeight) || ravenImg.offsetWidth;
         ravenImg.style.height = ravenHeight + 'px';
