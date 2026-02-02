@@ -463,8 +463,9 @@
         var quillBottom = (newsletterCy + contactCy) / 2;
         var quillHeight = quillBottom - quillTop;
         var quillWidth = quillHeight * (quillImg.naturalWidth / quillImg.naturalHeight) || quillImg.offsetWidth;
-        /* Top-middle (aboutCx, (browseCy+eventsCy)/2), bottom-middle (aboutCx, (newsletterCy+contactCy)/2) */
-        quillImg.style.left = (aboutCx - quillWidth / 2) + 'px';
+        /* Top-middle and bottom-middle at 30% viewport width */
+        var quillCx = window.innerWidth * 0.30;
+        quillImg.style.left = (quillCx - quillWidth / 2) + 'px';
         quillImg.style.top = quillTop + 'px';
         quillImg.style.height = quillHeight + 'px';
         quillImg.style.width = 'auto';
