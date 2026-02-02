@@ -456,7 +456,8 @@
         ravenImg.style.width = 'auto';
         ravenImg.style.maxWidth = 'none';
         ravenImg.style.top = ravenTop + 'px';
-        ravenImg.style.left = (contactCx - ravenWidth) + 'px';
+        /* Top-middle (contactCx, aboutCy), bottom-middle (contactCx, (browseCy+eventsCy)/2) */
+        ravenImg.style.left = (contactCx - ravenWidth / 2) + 'px';
 
         var quillTop = (browseCy + eventsCy) / 2;
         var quillBottom = (newsletterCy + contactCy) / 2;
