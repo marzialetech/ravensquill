@@ -27,13 +27,9 @@
             flex-direction: column;
             align-items: center;
             padding: 0;
-            padding-top: calc(20vh + 52px);
+            padding-top: calc(20vh + 75px);
         }
         .store-status {
-            position: fixed;
-            top: 20vh;
-            left: 50%;
-            transform: translateX(-50%);
             height: 52px;
             display: flex;
             flex-direction: column;
@@ -63,6 +59,24 @@
         .store-status-subtitle {
             font-size: 11px;
             opacity: 0.85;
+        }
+        .store-status-wrap {
+            position: fixed;
+            top: 20vh;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 45;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .opening-day-msg {
+            background: rgba(0,0,0,0.4);
+            color: #c9a227;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 4px;
         }
         .header {
             position: fixed;
@@ -372,12 +386,15 @@
         <img src="assets/logo.svg" alt="The Raven's Quill Bookstore">
     </div>
 
-    <div class="store-status" id="storeStatus">
+    <div class="store-status-wrap">
+        <div class="opening-day-msg" id="openingDayMsg" style="display: none;">Grand opening today!</div>
+        <div class="store-status" id="storeStatus">
         <div class="store-status-title-row">
             <span class="store-status-dot" id="storeStatusDot"></span>
             <span id="storeStatusText">—</span>
         </div>
         <span class="store-status-subtitle" id="storeStatusSubtitle">Open M-F 9-5</span>
+        </div>
     </div>
 
     <div class="icon-bar">
@@ -681,6 +698,16 @@
 
         updateStoreStatus();
         setInterval(updateStoreStatus, 60000);
+
+        var openingMsg = document.getElementById('openingDayMsg');
+        if (openingMsg) {
+            var d = new Date();
+            var opts = { timeZone: 'America/New_York' };
+            var mo = d.toLocaleString('en-US', Object.assign({}, opts, { month: 'numeric' }));
+            var day = d.toLocaleString('en-US', Object.assign({}, opts, { day: 'numeric' }));
+            var yr = d.toLocaleString('en-US', Object.assign({}, opts, { year: 'numeric' }));
+            if (mo === '2' && day === '2' && yr === '2026') openingMsg.style.display = 'block';
+        }
     }
 
     if (document.readyState === 'loading') {
