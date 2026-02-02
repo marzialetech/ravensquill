@@ -119,6 +119,8 @@
             user-select: none;
             z-index: 100;
             width: clamp(3rem, 8vw, 4.5rem);
+            transform: scale(2);
+            transform-origin: center center;
         }
         .desktop-icon:active { cursor: grabbing; }
         .desktop-icon img,
@@ -391,11 +393,13 @@
         var centerY = window.innerHeight / 2 - window.innerHeight * 0.1;
         var eventsLeft = centerX - (eventsBtn ? eventsBtn.offsetWidth / 2 : 0);
         var baseY = centerY - (eventsBtn ? eventsBtn.offsetHeight / 2 : 0) + window.innerHeight * 0.1;
+        var vh = window.innerHeight;
 
-        function placeAt(btn, parentRect, x) {
+        function placeAt(btn, parentRect, x, yOffset) {
             if (!btn) return;
+            var y = baseY + (yOffset || 0);
             btn.style.left = (x - parentRect.left) + 'px';
-            btn.style.top = (baseY - parentRect.top) + 'px';
+            btn.style.top = (y - parentRect.top) + 'px';
         }
 
         var browseLeft = eventsLeft - ICON_SPACING - (browseBtn ? browseBtn.offsetWidth : 0);
@@ -403,11 +407,11 @@
         var newsletterLeft = eventsLeft + (eventsBtn ? eventsBtn.offsetWidth : 0) + ICON_SPACING;
         var contactLeft = newsletterLeft + (newsletterBtn ? newsletterBtn.offsetWidth : 0) + ICON_SPACING;
 
-        placeAt(aboutBtn, figBooksRect, aboutLeft);
-        placeAt(browseBtn, figRavenRect, browseLeft);
-        placeAt(eventsBtn, figRavenRect, eventsLeft);
-        placeAt(newsletterBtn, figRavenRect, newsletterLeft);
-        placeAt(contactBtn, figBooksRect, contactLeft);
+        placeAt(aboutBtn, figBooksRect, aboutLeft, -vh * 0.3);
+        placeAt(browseBtn, figRavenRect, browseLeft, -vh * 0.15);
+        placeAt(eventsBtn, figRavenRect, eventsLeft, 0);
+        placeAt(newsletterBtn, figRavenRect, newsletterLeft, vh * 0.15);
+        placeAt(contactBtn, figBooksRect, contactLeft, vh * 0.3);
     }
 
     function positionContactBtn() { positionAllIcons(); }
