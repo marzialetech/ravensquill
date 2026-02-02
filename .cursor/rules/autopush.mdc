@@ -1,0 +1,14 @@
+---
+description: Auto-push every change to git
+alwaysApply: true
+---
+
+# Auto-push
+
+After making any code or asset changes to this project, always:
+
+1. Stage all changes (`git add`)
+2. Commit with a descriptive message
+3. Push to the remote (`git push`)
+
+Do this at the end of every response that modifies files.
