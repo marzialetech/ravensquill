@@ -288,13 +288,34 @@
             padding-top: 12px;
             border-top: 1px solid #5c5240;
         }
+        .browse-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #2c2416;
+            margin: 0 -16px 12px -16px;
+            padding: 0 16px 12px 16px;
+            border-bottom: 1px solid #5c5240;
+        }
         .browse-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 0;
             gap: 12px;
         }
+        .browse-refresh {
+            background: none;
+            border: none;
+            color: #c9a227;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: inherit;
+            padding: 4px 0;
+        }
+        .browse-refresh:hover { color: #e8d48a; }
+        .browse-refresh:disabled { color: #6d6350; cursor: not-allowed; text-decoration: none; }
         .browse-search {
             flex: 1;
             background: #1a1510;
@@ -696,9 +717,12 @@
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <p class="browse-intro">Browse our collection and add items to your cart. <strong>Pickup only</strong>—orders must be picked up at our store.</p>
-            <div class="browse-controls">
-                <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
+            <div class="browse-sticky-header">
+                <p class="browse-intro">Browse our collection and add items to your cart. <strong>Pickup only</strong>—orders must be picked up at our store.</p>
+                <div class="browse-controls">
+                    <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
+                    <button type="button" class="browse-refresh" id="browseRefresh">Refresh catalog</button>
+                </div>
             </div>
             <div id="browseContent">
                 <div class="browse-loading">Loading inventory...</div>
@@ -992,6 +1016,40 @@
         if (browseSearch) {
             browseSearch.addEventListener('input', function() {
                 renderInventory(this.value.toLowerCase().trim());
+            });
+        }
+
+        // Refresh catalog (re-syncs from Square, updates images)
+        var browseRefresh = document.getElementById('browseRefresh');
+        if (browseRefresh) {
+            browseRefresh.addEventListener('click', function() {
+                if (browseRefresh.disabled) return;
+                browseRefresh.disabled = true;
+                browseRefresh.textContent = 'Refreshing...';
+                browseContent.innerHTML = '<div class="browse-loading">Refreshing catalog from Square (this may take a minute)...</div>';
+
+                fetch(API_BASE + '/api/sync', { method: 'POST' })
+                    .then(function(res) {
+                        if (!res.ok) throw new Error('Sync failed');
+                        return fetch(API_BASE + '/api/items');
+                    })
+                    .then(function(res) {
+                        if (!res.ok) throw new Error('Failed to load inventory');
+                        return res.json();
+                    })
+                    .then(function(data) {
+                        inventoryItems = data.items || [];
+                        renderInventory();
+                    })
+                    .catch(function(err) {
+                        console.error('Refresh error:', err);
+                        browseContent.innerHTML = '<div class="browse-error">Refresh failed. Please try again.</div>';
+                        renderInventory();
+                    })
+                    .finally(function() {
+                        browseRefresh.disabled = false;
+                        browseRefresh.textContent = 'Refresh catalog';
+                    });
             });
         }
     }

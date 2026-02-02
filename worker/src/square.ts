@@ -30,6 +30,7 @@ export interface SquareCatalogObject {
     name: string;
     description?: string;
     category_id?: string;
+    image_ids?: string[];
     variations?: Array<{
       id: string;
       item_variation_data?: {
@@ -186,6 +187,13 @@ export async function syncInventoryToKV(env: Env): Promise<SquareItem[]> {
 
     const quantity = inventoryCounts.get(variation.id) ?? 0;
 
+    // Get first image URL if item has image_ids
+    let imageUrl: string | undefined;
+    const imageIds = item.item_data?.image_ids;
+    if (imageIds?.length) {
+      imageUrl = imageMap.get(imageIds[0]);
+    }
+
     transformedItems.push({
       id: item.id,
       variationId: variation.id,
@@ -193,6 +201,7 @@ export async function syncInventoryToKV(env: Env): Promise<SquareItem[]> {
       description: item.item_data.description,
       price: variationData.price_money?.amount ?? 0,
       currency: variationData.price_money?.currency ?? 'USD',
+      imageUrl,
       category: item.item_data.category_id,
       inStock: quantity > 0,
       quantity: quantity,
