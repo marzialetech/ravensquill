@@ -401,23 +401,31 @@
     const quillImg = document.querySelector('.quill-img');
 
     function positionFigures() {
-        if (!aboutBtn || !newsletterBtn || !browseBtn || !eventsBtn || !ravenImg || !quillImg) return;
+        if (!aboutBtn || !newsletterBtn || !browseBtn || !eventsBtn || !contactBtn || !ravenImg || !quillImg) return;
         var ar = aboutBtn.getBoundingClientRect();
         var nr = newsletterBtn.getBoundingClientRect();
         var br = browseBtn.getBoundingClientRect();
         var er = eventsBtn.getBoundingClientRect();
+        var cr = contactBtn.getBoundingClientRect();
         var aboutCx = ar.left + ar.width / 2;
         var browseCx = br.left + br.width / 2;
         var newsletterCx = nr.left + nr.width / 2;
         var newsletterCy = nr.top + nr.height / 2;
+        var contactCy = cr.top + cr.height / 2;
         var browseCy = br.top + br.height / 2;
         var eventsCy = er.top + er.height / 2;
 
         ravenImg.style.left = (newsletterCx - ravenImg.offsetWidth / 2) + 'px';
         ravenImg.style.top = (browseCy - ravenImg.offsetHeight / 2) + 'px';
 
-        quillImg.style.left = ((aboutCx + browseCx) / 2 - quillImg.offsetWidth / 2) + 'px';
-        quillImg.style.top = ((newsletterCy + eventsCy) / 2 - quillImg.offsetHeight / 2) + 'px';
+        var quillTop = (browseCy + eventsCy) / 2;
+        var quillBottom = (newsletterCy + contactCy) / 2;
+        var quillHeight = quillBottom - quillTop;
+        quillImg.style.left = aboutCx + 'px';
+        quillImg.style.top = quillTop + 'px';
+        quillImg.style.height = quillHeight + 'px';
+        quillImg.style.width = 'auto';
+        quillImg.style.maxWidth = 'none';
     }
 
     var allWindows = [];
