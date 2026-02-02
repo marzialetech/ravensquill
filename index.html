@@ -94,6 +94,10 @@
             height: auto;
             filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
         }
+        @keyframes ambientFlicker {
+            0%, 100% { filter: drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px 1px 0 white) drop-shadow(0 -1px 0 white) drop-shadow(0 1px 0 white) drop-shadow(-1px 0 0 white) drop-shadow(1px 0 0 white) drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 12px rgba(255,210,130,0.35)) drop-shadow(0 0 28px rgba(255,185,90,0.2)); }
+            50% { filter: drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px 1px 0 white) drop-shadow(0 -1px 0 white) drop-shadow(0 1px 0 white) drop-shadow(-1px 0 0 white) drop-shadow(1px 0 0 white) drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 10px rgba(255,200,110,0.28)) drop-shadow(0 0 24px rgba(255,175,75,0.15)); }
+        }
         .stage .figure .quill-img,
         .stage .figure .raven-img {
             position: fixed;
@@ -102,7 +106,8 @@
             max-width: min(45vw, 500px);
             height: auto;
             z-index: 25;
-            filter: drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px 1px 0 white) drop-shadow(0 -1px 0 white) drop-shadow(0 1px 0 white) drop-shadow(-1px 0 0 white) drop-shadow(1px 0 0 white);
+            filter: drop-shadow(-1px -1px 0 white) drop-shadow(1px -1px 0 white) drop-shadow(-1px 1px 0 white) drop-shadow(1px 1px 0 white) drop-shadow(0 -1px 0 white) drop-shadow(0 1px 0 white) drop-shadow(-1px 0 0 white) drop-shadow(1px 0 0 white) drop-shadow(0 4px 12px rgba(0,0,0,0.4)) drop-shadow(0 0 12px rgba(255,210,130,0.35)) drop-shadow(0 0 28px rgba(255,185,90,0.2));
+            animation: ambientFlicker 10s ease-in-out infinite;
         }
         .stage .figure .quill-img {
             max-width: min(36vw, 400px);
