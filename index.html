@@ -269,7 +269,42 @@
             display: block;
             border-radius: 2px;
             border: 1px solid #5c5240;
+            cursor: pointer;
         }
+        .photos-grid img:hover { opacity: 0.9; }
+
+        /* Fullscreen photo lightbox */
+        .photo-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .photo-lightbox.open { display: flex; }
+        .photo-lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .photo-lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #3d3528;
+            color: #e8e0d4;
+            border: 2px solid #5c5240;
+            font-size: 32px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 8px 20px;
+            font-family: inherit;
+            z-index: 301;
+        }
+        .photo-lightbox-close:hover { background: #4d4538; color: #fff; }
     </style>
 </head>
 <body>
@@ -373,18 +408,23 @@
         <div class="app-window-body">
             <h3 class="photos-section-title">General store</h3>
             <div class="photos-grid">
-                <img src="assets/photo-store-1.png" alt="Store lounge and seating area">
-                <img src="assets/photo-store-2.png" alt="Bookstore aisle with shelves">
-                <img src="assets/photo-store-3.png" alt="Book display with neon sign">
-                <img src="assets/photo-store-4.png" alt="Bridgerton books and raven artwork">
+                <img src="assets/photo-store-1.png" alt="Store lounge and seating area" class="photo-thumb">
+                <img src="assets/photo-store-2.png" alt="Bookstore aisle with shelves" class="photo-thumb">
+                <img src="assets/photo-store-3.png" alt="Book display with neon sign" class="photo-thumb">
+                <img src="assets/photo-store-4.png" alt="Bridgerton books and raven artwork" class="photo-thumb">
             </div>
             <h3 class="photos-section-title">Board games available</h3>
             <div class="photos-grid">
-                <img src="assets/photo-games-1.png" alt="Custom Scrabble board">
-                <img src="assets/photo-games-2.png" alt="Backgammon set">
-                <img src="assets/photo-games-3.png" alt="Chess and checkers set">
+                <img src="assets/photo-games-1.png" alt="Custom Scrabble board" class="photo-thumb">
+                <img src="assets/photo-games-2.png" alt="Backgammon set" class="photo-thumb">
+                <img src="assets/photo-games-3.png" alt="Chess and checkers set" class="photo-thumb">
             </div>
         </div>
+    </div>
+
+    <div class="photo-lightbox" id="photoLightbox">
+        <button class="photo-lightbox-close" id="photoLightboxClose" type="button" aria-label="Close">&times;</button>
+        <img src="" alt="" id="photoLightboxImg">
     </div>
 
     <script>
@@ -493,6 +533,23 @@
         eventsBtn.addEventListener('click', function() { openWindow(eventsWindow, eventsBtn); });
         photosBtn.addEventListener('click', function() { openWindow(photosWindow, photosBtn); });
         contactBtn.addEventListener('click', function() { openWindow(contactWindow, contactBtn); });
+
+        var photoLightbox = document.getElementById('photoLightbox');
+        var photoLightboxImg = document.getElementById('photoLightboxImg');
+        var photoLightboxClose = document.getElementById('photoLightboxClose');
+        document.querySelectorAll('.photo-thumb').forEach(function(thumb) {
+            thumb.addEventListener('click', function() {
+                photoLightboxImg.src = thumb.src;
+                photoLightboxImg.alt = thumb.alt;
+                photoLightbox.classList.add('open');
+            });
+        });
+        photoLightboxClose.addEventListener('click', function() {
+            photoLightbox.classList.remove('open');
+        });
+        photoLightbox.addEventListener('click', function(e) {
+            if (e.target === photoLightbox) photoLightbox.classList.remove('open');
+        });
 
         contactWindowClose.addEventListener('click', function() { closeWindow(contactWindow); });
         aboutWindowClose.addEventListener('click', function() { closeWindow(aboutWindow); });
