@@ -601,7 +601,7 @@
         if (!win) return;
         allWindows.forEach(function(w) { if (w !== win) w.classList.remove('open'); });
         updateWindowWidths();
-        var topUnderHeader = window.innerHeight * 0.20 + 8;
+        var topUnderHeader = window.innerHeight * 0.20 + 0;
         win.style.top = topUnderHeader + 'px';
         win.classList.add('open');
         requestAnimationFrame(function() {
