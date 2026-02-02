@@ -390,7 +390,7 @@
         var centerX = window.innerWidth / 2;
         var centerY = window.innerHeight / 2 - window.innerHeight * 0.1;
         var eventsLeft = centerX - (eventsBtn ? eventsBtn.offsetWidth / 2 : 0);
-        var baseY = centerY - (eventsBtn ? eventsBtn.offsetHeight / 2 : 0);
+        var baseY = centerY - (eventsBtn ? eventsBtn.offsetHeight / 2 : 0) + window.innerHeight * 0.1;
 
         function placeAt(btn, parentRect, x) {
             if (!btn) return;
