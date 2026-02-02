@@ -185,14 +185,9 @@
             border: 2px solid #5c5240;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             z-index: 200;
-            min-width: 300px;
-            max-width: 90vw;
             font-family: inherit;
             display: none;
             font-size: 14px;
-        }
-        #photosWindow {
-            min-width: 340px;
         }
         .app-window.open { display: block; }
         .app-window-header {
@@ -548,11 +543,20 @@
 
     var allWindows = [];
 
+    function updateWindowWidths() {
+        var logo = document.querySelector('.header img');
+        if (!logo) return;
+        var w = logo.offsetWidth;
+        allWindows.forEach(function(win) {
+            if (win) win.style.width = w + 'px';
+        });
+    }
+
     function openWindow(win, btn) {
         if (!win) return;
         allWindows.forEach(function(w) { if (w !== win) w.classList.remove('open'); });
+        updateWindowWidths();
         var topUnderHeader = window.innerHeight * 0.20 + 36;
-        win.style.left = Math.max(10, (window.innerWidth - 360) / 2) + 'px';
         win.style.top = topUnderHeader + 'px';
         win.classList.add('open');
         requestAnimationFrame(function() {
@@ -606,8 +610,9 @@
         photosWindowClose.addEventListener('click', function() { closeWindow(photosWindow); });
 
         positionFigures();
-        window.addEventListener('resize', positionFigures);
-        window.addEventListener('load', positionFigures);
+        updateWindowWidths();
+        window.addEventListener('resize', function() { positionFigures(); updateWindowWidths(); });
+        window.addEventListener('load', function() { positionFigures(); updateWindowWidths(); });
 
         updateStoreStatus();
         setInterval(updateStoreStatus, 60000);
