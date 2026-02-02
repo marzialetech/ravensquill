@@ -407,11 +407,12 @@
         var newsletterLeft = eventsLeft + (eventsBtn ? eventsBtn.offsetWidth : 0) + ICON_SPACING;
         var contactLeft = newsletterLeft + (newsletterBtn ? newsletterBtn.offsetWidth : 0) + ICON_SPACING;
 
-        placeAt(aboutBtn, figBooksRect, aboutLeft, -vh * 0.2);
-        placeAt(browseBtn, figRavenRect, browseLeft, -vh * 0.1);
-        placeAt(eventsBtn, figRavenRect, eventsLeft, 0);
-        placeAt(newsletterBtn, figRavenRect, newsletterLeft, vh * 0.1);
-        placeAt(contactBtn, figBooksRect, contactLeft, vh * 0.2);
+        var aboutY = -vh * 0.2;
+        placeAt(aboutBtn, figBooksRect, aboutLeft, aboutY);
+        placeAt(browseBtn, figRavenRect, browseLeft, aboutY + vh * 0.15);
+        placeAt(eventsBtn, figRavenRect, eventsLeft, aboutY + vh * 0.3);
+        placeAt(newsletterBtn, figRavenRect, newsletterLeft, aboutY + vh * 0.45);
+        placeAt(contactBtn, figBooksRect, contactLeft, aboutY + vh * 0.6);
     }
 
     function positionContactBtn() { positionAllIcons(); }
