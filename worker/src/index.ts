@@ -10,10 +10,10 @@ import {
   SquareItem,
 } from './square';
 
-// CORS headers
-function corsHeaders(env: Env): HeadersInit {
+// CORS headers - defensive for missing env
+function corsHeaders(env?: Env): HeadersInit {
   return {
-    'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
+    'Access-Control-Allow-Origin': env?.CORS_ORIGIN || '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -114,6 +114,9 @@ interface CartItem {
 
 interface CartRequest {
   items: CartItem[];
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
 }
 
 async function handleCreateCart(request: Request, env: Env): Promise<Response> {
@@ -137,8 +140,13 @@ async function handleCreateCart(request: Request, env: Env): Promise<Response> {
       }
     }
 
-    // Create Square order
-    const order = await createOrder(env, body.items);
+    // Create Square order with contact info for pickup
+    const order = await createOrder(env, {
+      items: body.items,
+      customerName: body.customerName,
+      customerEmail: body.customerEmail,
+      customerPhone: body.customerPhone,
+    });
 
     return jsonResponse({
       orderId: order.orderId,
@@ -200,20 +208,20 @@ function handleHealth(env: Env): Response {
 // Main request handler
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const path = url.pathname;
-    const method = request.method;
-
-    // Handle CORS preflight
-    if (method === 'OPTIONS') {
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders(env),
-      });
-    }
-
-    // Route requests
     try {
+      const url = new URL(request.url);
+      const path = url.pathname;
+      const method = request.method;
+
+      // Handle CORS preflight
+      if (method === 'OPTIONS') {
+        return new Response(null, {
+          status: 204,
+          headers: corsHeaders(env),
+        });
+      }
+
+      // Route requests
       // GET /api/items - Get cached inventory
       if (method === 'GET' && path === '/api/items') {
         return handleGetItems(env);
@@ -247,8 +255,20 @@ export default {
       // 404 for unknown routes
       return errorResponse('Not found', env, 404);
     } catch (error) {
-      console.error('Request error:', error);
-      return errorResponse('Internal server error', env);
+      const msg = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : '';
+      console.error('Worker error:', msg, stack);
+      return new Response(JSON.stringify({
+        error: 'Worker error',
+        message: msg,
+        stack: stack?.split('\n').slice(0, 5).join('\n'),
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(env),
+        },
+      });
     }
   },
 };

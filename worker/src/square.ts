@@ -220,22 +220,38 @@ export async function getItemsFromKV(env: Env): Promise<SquareItem[]> {
   return JSON.parse(data) as SquareItem[];
 }
 
-export async function createOrder(env: Env, items: Array<{ variationId: string; quantity: number }>): Promise<{ orderId: string; total: number }> {
+export interface CreateOrderParams {
+  items: Array<{ variationId: string; quantity: number }>;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+}
+
+export async function createOrder(env: Env, params: CreateOrderParams): Promise<{ orderId: string; total: number }> {
   const baseUrl = getBaseUrl(env);
 
-  const lineItems = items.map(item => ({
+  const lineItems = params.items.map(item => ({
     quantity: item.quantity.toString(),
     catalog_object_id: item.variationId,
   }));
+
+  const metadata: Record<string, string> = {};
+  if (params.customerName) metadata.customer_name = params.customerName;
+  if (params.customerEmail) metadata.customer_email = params.customerEmail;
+  if (params.customerPhone) metadata.customer_phone = params.customerPhone;
+  metadata.fulfillment = 'pickup';
+
+  const orderBody: Record<string, unknown> = {
+    location_id: env.SQUARE_LOCATION_ID,
+    line_items: lineItems,
+    metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+  };
 
   const response = await fetch(`${baseUrl}/v2/orders`, {
     method: 'POST',
     headers: getHeaders(env),
     body: JSON.stringify({
-      order: {
-        location_id: env.SQUARE_LOCATION_ID,
-        line_items: lineItems,
-      },
+      order: orderBody,
       idempotency_key: crypto.randomUUID(),
     }),
   });

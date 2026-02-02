@@ -512,6 +512,43 @@
         }
         .cart-checkout-btn:hover { background: #e8d48a; }
         .cart-empty { text-align: center; padding: 40px 20px; color: #8a7d6d; }
+        .pickup-notice {
+            background: rgba(201, 162, 39, 0.15);
+            border: 1px solid #c9a227;
+            color: #e8e0d4;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .pickup-notice strong { color: #c9a227; }
+        .checkout-field {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .checkout-field label {
+            display: block;
+            font-size: 12px;
+            color: #8a7d6d;
+            margin-bottom: 4px;
+        }
+        .checkout-field input {
+            width: 100%;
+            background: #1a1510;
+            border: 1px solid #5c5240;
+            color: #e8e0d4;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+        .checkout-field input:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+        .checkout-field input::placeholder { color: #6d6350; }
         .app-window-body a:hover { color: #e8d48a; }
 
 
@@ -659,7 +696,7 @@
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <p class="browse-intro">Browse our collection and add items to your cart for online purchase.</p>
+            <p class="browse-intro">Browse our collection and add items to your cart. <strong>Pickup only</strong>—orders must be picked up at our store.</p>
             <div class="browse-controls">
                 <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
             </div>
@@ -1199,6 +1236,9 @@
             html += '</div>';
         });
 
+        html += '<div class="pickup-notice">';
+        html += '  <strong>Pickup only.</strong> Orders must be picked up at our store. We will contact you when your order is ready.';
+        html += '</div>';
         html += '<div class="cart-total">';
         html += '  <span>Total</span>';
         html += '  <span class="cart-total-amount">' + formatPrice(total, 'USD') + '</span>';
@@ -1241,21 +1281,35 @@
     var squareCard = null;
 
     function startCheckout() {
-        // For now, show a message that checkout is being set up
-        // The full Square Web Payments SDK integration will be added next
         var body = document.getElementById('cartModalBody');
         if (!body) return;
 
         var total = getCartTotal();
 
         body.innerHTML = 
-            '<div style="text-align: center; padding: 20px;">' +
-            '  <h3 style="color: #c9a227; margin-bottom: 16px;">Checkout</h3>' +
-            '  <p style="margin-bottom: 16px;">Total: ' + formatPrice(total, 'USD') + '</p>' +
+            '<div style="padding: 20px;">' +
+            '  <h3 style="color: #c9a227; margin-bottom: 16px; text-align: center;">Checkout</h3>' +
+            '  <div class="pickup-notice">' +
+            '    <strong>Pickup only.</strong> Your order must be picked up at our store. We will contact you when it is ready. Shipping is not available at this time.' +
+            '  </div>' +
+            '  <p style="margin-bottom: 16px; font-size: 13px; color: #8a7d6d; text-align: center;">Pickup: 7632 N. State Street, Lowville, NY 13367</p>' +
+            '  <div class="checkout-field">' +
+            '    <label for="checkoutName">Name *</label>' +
+            '    <input type="text" id="checkoutName" placeholder="Your name" required>' +
+            '  </div>' +
+            '  <div class="checkout-field">' +
+            '    <label for="checkoutEmail">Email *</label>' +
+            '    <input type="email" id="checkoutEmail" placeholder="your@email.com" required>' +
+            '  </div>' +
+            '  <div class="checkout-field">' +
+            '    <label for="checkoutPhone">Phone *</label>' +
+            '    <input type="tel" id="checkoutPhone" placeholder="(315) 555-0123" required>' +
+            '  </div>' +
+            '  <p style="margin: 16px 0; font-size: 14px; font-weight: 600; text-align: center;">Total: ' + formatPrice(total, 'USD') + '</p>' +
             '  <div id="card-container" style="min-height: 100px; background: #1a1510; padding: 16px; border-radius: 4px; margin-bottom: 16px;"></div>' +
             '  <button id="payBtn" class="cart-checkout-btn" disabled>Processing...</button>' +
             '  <p id="checkoutError" style="color: #c62828; margin-top: 12px; display: none;"></p>' +
-            '  <button id="backToCartBtn" style="background: none; border: none; color: #c9a227; cursor: pointer; margin-top: 12px; text-decoration: underline;">Back to Cart</button>' +
+            '  <button id="backToCartBtn" style="background: none; border: none; color: #c9a227; cursor: pointer; margin-top: 12px; text-decoration: underline; display: block; margin-left: auto; margin-right: auto;">Back to Cart</button>' +
             '</div>';
 
         document.getElementById('backToCartBtn').addEventListener('click', function() {
@@ -1308,6 +1362,17 @@
         var payBtn = document.getElementById('payBtn');
         var errorEl = document.getElementById('checkoutError');
 
+        // Validate contact info
+        var name = (document.getElementById('checkoutName') || {}).value?.trim();
+        var email = (document.getElementById('checkoutEmail') || {}).value?.trim();
+        var phone = (document.getElementById('checkoutPhone') || {}).value?.trim();
+
+        if (!name || !email || !phone) {
+            errorEl.textContent = 'Please fill in your name, email, and phone so we can contact you when your order is ready for pickup.';
+            errorEl.style.display = 'block';
+            return;
+        }
+
         payBtn.disabled = true;
         payBtn.textContent = 'Processing...';
         errorEl.style.display = 'none';
@@ -1319,7 +1384,7 @@
                 throw new Error(tokenResult.errors?.[0]?.message || 'Card verification failed');
             }
 
-            // Create order
+            // Create order with contact info
             var cartItems = cart.map(function(item) {
                 return { variationId: item.variationId, quantity: item.quantity };
             });
@@ -1327,7 +1392,12 @@
             var orderRes = await fetch(API_BASE + '/api/cart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items: cartItems })
+                body: JSON.stringify({
+                    items: cartItems,
+                    customerName: name,
+                    customerEmail: email,
+                    customerPhone: phone
+                })
             });
 
             if (!orderRes.ok) throw new Error('Failed to create order');
@@ -1357,7 +1427,10 @@
                     '<div style="text-align: center; padding: 40px;">' +
                     '  <h3 style="color: #4caf50; margin-bottom: 16px;">Payment Successful!</h3>' +
                     '  <p>Thank you for your order.</p>' +
-                    '  <p style="font-size: 13px; color: #8a7d6d; margin-top: 12px;">Order ID: ' + orderData.orderId + '</p>' +
+                    '  <div class="pickup-notice" style="margin: 20px 0;">' +
+                    '    <strong>Pickup at our store:</strong><br>7632 N. State Street, Lowville, NY 13367<br>We will contact you when your order is ready.' +
+                    '  </div>' +
+                    '  <p style="font-size: 13px; color: #8a7d6d;">Order ID: ' + orderData.orderId + '</p>' +
                     '  <button onclick="closeCartModal()" class="cart-checkout-btn" style="margin-top: 20px;">Close</button>' +
                     '</div>';
             } else {
