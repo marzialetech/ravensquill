@@ -251,18 +251,12 @@
             margin: 0 0 8px 0;
         }
 
-        .photos-section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #c9a227;
-            margin: 16px 0 8px 0;
-        }
-        .photos-section-title:first-child { margin-top: 0; }
         .photos-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
+        .photos-grid + .photos-grid { margin-top: 12px; }
         .photos-grid img {
             width: 100%;
             height: auto;
@@ -406,14 +400,12 @@
             <button class="app-window-close" id="photosWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <h3 class="photos-section-title">General store</h3>
             <div class="photos-grid">
                 <img src="assets/photo-store-1.png" alt="Store lounge and seating area" class="photo-thumb">
                 <img src="assets/photo-store-2.png" alt="Bookstore aisle with shelves" class="photo-thumb">
                 <img src="assets/photo-store-3.png" alt="Book display with neon sign" class="photo-thumb">
                 <img src="assets/photo-store-4.png" alt="Bridgerton books and raven artwork" class="photo-thumb">
             </div>
-            <h3 class="photos-section-title">Board games available</h3>
             <div class="photos-grid">
                 <img src="assets/photo-games-1.png" alt="Custom Scrabble board" class="photo-thumb">
                 <img src="assets/photo-games-2.png" alt="Backgammon set" class="photo-thumb">
