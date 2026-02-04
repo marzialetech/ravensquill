@@ -1719,6 +1719,22 @@
         if (!window.supabase || !window.supabase.createClient) return;
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // Restore session from URL hash (handoff from marziale.tech when clicking Raven's Quill in My Products)
+        var hash = window.location.hash;
+        var hashPromise = Promise.resolve();
+        if (hash) {
+            var params = new URLSearchParams(hash.replace(/^#/, ''));
+            var accessToken = params.get('access_token');
+            var refreshToken = params.get('refresh_token');
+            if (accessToken && refreshToken) {
+                hashPromise = supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+                    .then(function() {
+                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                    })
+                    .catch(function() {});
+            }
+        }
+
         var authBtn = document.getElementById('authBtn');
         var authModal = document.getElementById('authModal');
         var authModalClose = document.getElementById('authModalClose');
@@ -1749,7 +1765,9 @@
             checkAdminAndRefreshEvents();
         }
 
-        supabaseClient.auth.getSession().then(function(r) {
+        hashPromise.then(function() {
+            return supabaseClient.auth.getSession();
+        }).then(function(r) {
             var user = r.data?.session?.user || null;
             updateAuthUI(user);
         });
@@ -1762,7 +1780,7 @@
             if (currentUser) {
                 supabaseClient.auth.signOut();
             } else {
-                window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
+                authModal.classList.add('open');
             }
         });
 
@@ -1771,7 +1789,12 @@
 
         authGithubBtn.addEventListener('click', function() {
             authError.style.display = 'none';
-            window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
+            supabaseClient.auth.signInWithOAuth({
+                provider: 'github',
+                options: { redirectTo: window.location.origin + '/' }
+            }).then(function(r) {
+                if (r.error && authError) { authError.textContent = r.error.message; authError.style.display = 'block'; }
+            });
         });
 
         authLogoutBtn.addEventListener('click', function() {
