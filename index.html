@@ -295,6 +295,7 @@
             padding: 16px;
             overflow-y: auto;
             display: block;
+            max-height: calc(100vh - 90px);
         }
         .events-admin-bar {
             margin-bottom: 16px;
@@ -382,53 +383,47 @@
         .events-tab.active { color: #c9a227; border-bottom-color: #c9a227; }
         .events-tab-panel { display: none; }
         .events-tab-panel.active { display: block; }
+        #eventsTabFacebookPanel.active {
+            display: block;
+            min-height: calc(100vh - 220px);
+        }
+        .events-facebook-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
         .events-facebook-embed {
             width: 100%;
-            min-height: 400px;
+            min-width: 280px;
+            max-width: 500px;
+            min-height: calc(100vh - 180px);
             border: none;
             border-radius: 2px;
         }
         .app-window-body a { color: #c9a227; text-decoration: underline; }
 
-        .browse-intro {
-            margin: 0 0 12px 0;
+        .browse-header-with-search {
+            gap: 12px;
         }
+        .browse-header-with-search .browse-search {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+        }
+        .browse-pickup-blurb {
+            font-size: 12px;
+            color: #e8e0d4;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .browse-pickup-blurb strong { color: #c9a227; }
         .browse-address {
             margin: 16px 0 0 0;
             font-size: 13px;
             padding-top: 12px;
             border-top: 1px solid #5c5240;
         }
-        .browse-sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: #2c2416;
-            margin: 0 -16px 12px -16px;
-            padding: 0 16px 12px 16px;
-            border-bottom: 1px solid #5c5240;
-        }
-        .browse-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0;
-            gap: 12px;
-        }
-        .browse-refresh {
-            background: none;
-            border: none;
-            color: #c9a227;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: underline;
-            font-family: inherit;
-            padding: 4px 0;
-        }
-        .browse-refresh:hover { color: #e8d48a; }
-        .browse-refresh:disabled { color: #6d6350; cursor: not-allowed; text-decoration: none; }
         .browse-search {
-            flex: 1;
             background: #1a1510;
             border: 1px solid #5c5240;
             color: #e8e0d4;
@@ -835,7 +830,7 @@
         </button>
         <button class="desktop-icon" id="eventsBtn" type="button">
             <img src="assets/book-green.svg" alt="" draggable="false">
-            <span class="icon-caption">Events</span>
+            <span class="icon-caption">News &amp; Events</span>
         </button>
         <button class="desktop-icon" id="photosBtn" type="button">
             <img src="assets/book-brown.svg" alt="" draggable="false">
@@ -878,18 +873,13 @@
 
     <!-- Browse Window -->
     <div class="app-window" id="browseWindow">
-        <div class="app-window-header" id="browseWindowHeader">
+        <div class="app-window-header browse-header-with-search" id="browseWindowHeader">
             <span>Browse Catalog</span>
+            <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
+            <span class="browse-pickup-blurb"><strong>Pickup only</strong>—orders must be picked up at our store.</span>
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <div class="browse-sticky-header">
-                <p class="browse-intro">Browse our collection and add items to your cart. <strong>Pickup only</strong>—orders must be picked up at our store.</p>
-                <div class="browse-controls">
-                    <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
-                    <button type="button" class="browse-refresh" id="browseRefresh">Refresh catalog</button>
-                </div>
-            </div>
             <div id="browseContent">
                 <div class="browse-loading">Loading inventory...</div>
             </div>
@@ -918,13 +908,13 @@
     <!-- Events Window -->
     <div class="app-window" id="eventsWindow">
         <div class="app-window-header" id="eventsWindowHeader">
-            <span>Events &amp; Readings</span>
+            <span>News &amp; Events</span>
             <button class="app-window-close" id="eventsWindowClose">&times;</button>
         </div>
         <div class="app-window-body" id="eventsWindowBody">
             <div class="events-tabs">
                 <button type="button" class="events-tab active" id="eventsTabBulletin">Bulletin</button>
-                <button type="button" class="events-tab" id="eventsTabFacebook">Facebook</button>
+                <button type="button" class="events-tab" id="eventsTabFacebook">Facebook Feed</button>
             </div>
             <div id="eventsTabBulletinPanel" class="events-tab-panel active">
                 <div id="eventsAdminBar" class="events-admin-bar" style="display:none;">
@@ -935,7 +925,9 @@
                 </div>
             </div>
             <div id="eventsTabFacebookPanel" class="events-tab-panel">
-                <iframe class="events-facebook-embed" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61583263061310&amp;tabs=timeline&amp;width=340&amp;height=500&amp;small_header=false&amp;adapt_container_width=true&amp;hide_cover=false&amp;show_facepile=true&amp;appId" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" title="The Raven's Quill Bookstore on Facebook"></iframe>
+                <div class="events-facebook-wrap">
+                    <iframe class="events-facebook-embed" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61583263061310&amp;tabs=timeline&amp;width=500&amp;height=700&amp;small_header=false&amp;adapt_container_width=true&amp;hide_cover=false&amp;show_facepile=true&amp;appId" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" title="The Raven's Quill Bookstore on Facebook"></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -1257,39 +1249,6 @@
             });
         }
 
-        // Refresh catalog (re-syncs from Square, updates images)
-        var browseRefresh = document.getElementById('browseRefresh');
-        if (browseRefresh) {
-            browseRefresh.addEventListener('click', function() {
-                if (browseRefresh.disabled) return;
-                browseRefresh.disabled = true;
-                browseRefresh.textContent = 'Refreshing...';
-                browseContent.innerHTML = '<div class="browse-loading">Refreshing catalog from Square (this may take a minute)...</div>';
-
-                fetch(API_BASE + '/api/sync', { method: 'POST' })
-                    .then(function(res) {
-                        if (!res.ok) throw new Error('Sync failed');
-                        return fetch(API_BASE + '/api/items');
-                    })
-                    .then(function(res) {
-                        if (!res.ok) throw new Error('Failed to load inventory');
-                        return res.json();
-                    })
-                    .then(function(data) {
-                        inventoryItems = data.items || [];
-                        renderInventory();
-                    })
-                    .catch(function(err) {
-                        console.error('Refresh error:', err);
-                        browseContent.innerHTML = '<div class="browse-error">Refresh failed. Please try again.</div>';
-                        renderInventory();
-                    })
-                    .finally(function() {
-                        browseRefresh.disabled = false;
-                        browseRefresh.textContent = 'Refresh catalog';
-                    });
-            });
-        }
     }
 
     function loadInventory() {
