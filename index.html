@@ -1716,6 +1716,7 @@
     var supabaseClient = null;
     var currentUser = null;
     var isRavensquillAdmin = false;
+    var RAVENSQUILL_OWNER_EMAIL = 'jm@marziale.tech';
 
     function initAuth() {
         if (!window.supabase || !window.supabase.createClient) return;
@@ -1790,6 +1791,11 @@
     function checkAdminAndRefreshEvents() {
         if (!supabaseClient || !currentUser) {
             isRavensquillAdmin = false;
+            if (typeof refreshEventsUI === 'function') refreshEventsUI();
+            return;
+        }
+        if (currentUser.email === RAVENSQUILL_OWNER_EMAIL) {
+            isRavensquillAdmin = true;
             if (typeof refreshEventsUI === 'function') refreshEventsUI();
             return;
         }

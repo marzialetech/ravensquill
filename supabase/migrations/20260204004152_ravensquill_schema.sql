@@ -1,5 +1,4 @@
 -- Ravensquill Auth + Events Schema
--- Run this in Supabase SQL Editor for project qvrrlfzogtuahmvsbvmu
 
 -- 1. Admins table: who can manage events (Gene, Jeri, + future admins)
 CREATE TABLE IF NOT EXISTS public.ravensquill_admins (
@@ -62,15 +61,13 @@ CREATE POLICY "Public read event images"
   USING (true);
 
 -- Helper: check if current user is admin (must exist before admin policies)
--- Includes jm@marziale.tech + anyone in ravensquill_admins
 CREATE OR REPLACE FUNCTION public.ravensquill_is_admin()
 RETURNS boolean
 LANGUAGE sql
 SECURITY DEFINER
 STABLE
 AS $$
-  SELECT EXISTS (SELECT 1 FROM public.ravensquill_admins WHERE user_id = auth.uid())
-     OR (SELECT email FROM auth.users WHERE id = auth.uid()) = 'jm@marziale.tech';
+  SELECT EXISTS (SELECT 1 FROM public.ravensquill_admins WHERE user_id = auth.uid());
 $$;
 
 -- Admins can insert/update/delete events
@@ -115,19 +112,12 @@ CREATE INDEX IF NOT EXISTS idx_ravensquill_events_created_at
 CREATE INDEX IF NOT EXISTS idx_ravensquill_event_images_event
   ON public.ravensquill_event_images (event_id, sort_order);
 
--- ========================================
--- STORAGE BUCKET (create via Dashboard first, then run policies)
--- ========================================
--- 1. In Supabase Dashboard: Storage → New bucket → name: ravensquill-events, Public: ON
--- 2. Run the policies below:
-
--- Public read for ravensquill-events bucket
+-- Storage policies (bucket ravensquill-events must exist - create via Dashboard first)
 CREATE POLICY "Public read ravensquill-events"
   ON storage.objects FOR SELECT
   TO public
   USING (bucket_id = 'ravensquill-events');
 
--- Admins can upload/update/delete in ravensquill-events
 CREATE POLICY "Admins write ravensquill-events"
   ON storage.objects FOR ALL
   TO authenticated
