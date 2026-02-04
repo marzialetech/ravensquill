@@ -361,6 +361,33 @@
         .event-post-actions .event-delete:hover { background: rgba(198,40,40,0.2); }
         .event-form-previews { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .event-form-previews img { width: 80px; height: 80px; object-fit: cover; border-radius: 2px; border: 1px solid #5c5240; }
+        .events-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #5c5240;
+        }
+        .events-tab {
+            background: transparent;
+            border: none;
+            color: #8a7d6d;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .events-tab:hover { color: #e8e0d4; }
+        .events-tab.active { color: #c9a227; border-bottom-color: #c9a227; }
+        .events-tab-panel { display: none; }
+        .events-tab-panel.active { display: block; }
+        .events-facebook-embed {
+            width: 100%;
+            min-height: 400px;
+            border: none;
+            border-radius: 2px;
+        }
         .app-window-body a { color: #c9a227; text-decoration: underline; }
 
         .browse-intro {
@@ -895,11 +922,20 @@
             <button class="app-window-close" id="eventsWindowClose">&times;</button>
         </div>
         <div class="app-window-body" id="eventsWindowBody">
-            <div id="eventsAdminBar" class="events-admin-bar" style="display:none;">
-                <button type="button" class="events-add-btn" id="eventsAddBtn">Add post</button>
+            <div class="events-tabs">
+                <button type="button" class="events-tab active" id="eventsTabBulletin">Bulletin</button>
+                <button type="button" class="events-tab" id="eventsTabFacebook">Facebook</button>
             </div>
-            <div id="eventsFeed" class="events-feed">
-                <div class="events-loading">Loading events...</div>
+            <div id="eventsTabBulletinPanel" class="events-tab-panel active">
+                <div id="eventsAdminBar" class="events-admin-bar" style="display:none;">
+                    <button type="button" class="events-add-btn" id="eventsAddBtn">Add post</button>
+                </div>
+                <div id="eventsFeed" class="events-feed">
+                    <div class="events-loading">Loading events...</div>
+                </div>
+            </div>
+            <div id="eventsTabFacebookPanel" class="events-tab-panel">
+                <iframe class="events-facebook-embed" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61583263061310&amp;tabs=timeline&amp;width=340&amp;height=500&amp;small_header=false&amp;adapt_container_width=true&amp;hide_cover=false&amp;show_facepile=true&amp;appId" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" title="The Raven's Quill Bookstore on Facebook"></iframe>
             </div>
         </div>
     </div>
@@ -1850,6 +1886,25 @@
 
     function initEvents() {
         loadEvents();
+
+        var tabBulletin = document.getElementById('eventsTabBulletin');
+        var tabFacebook = document.getElementById('eventsTabFacebook');
+        var panelBulletin = document.getElementById('eventsTabBulletinPanel');
+        var panelFacebook = document.getElementById('eventsTabFacebookPanel');
+        if (tabBulletin && tabFacebook && panelBulletin && panelFacebook) {
+            tabBulletin.addEventListener('click', function() {
+                tabBulletin.classList.add('active');
+                tabFacebook.classList.remove('active');
+                panelBulletin.classList.add('active');
+                panelFacebook.classList.remove('active');
+            });
+            tabFacebook.addEventListener('click', function() {
+                tabFacebook.classList.add('active');
+                tabBulletin.classList.remove('active');
+                panelFacebook.classList.add('active');
+                panelBulletin.classList.remove('active');
+            });
+        }
 
         var eventsAddBtn = document.getElementById('eventsAddBtn');
         var eventFormModal = document.getElementById('eventFormModal');
