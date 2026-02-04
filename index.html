@@ -1718,23 +1718,36 @@
     function initAuth() {
         if (!window.supabase || !window.supabase.createClient) return;
 
-        // Parse hash BEFORE creating client. Handoff from marziale.tech My Products.
-        var hashTokens = null;
+        // Session handoff from marziale.tech: (1) postMessage when opened as popup, (2) hash when same-tab redirect
+        var handoffTokens = null;
+        if (window.opener) {
+            setTimeout(function() { window.opener.postMessage({ type: 'ravensquill-ready' }, '*'); }, 100);
+        }
         if (window.location.hash) {
             var params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
             var at = params.get('access_token');
             var rt = params.get('refresh_token');
-            if (at && rt) hashTokens = { access_token: at, refresh_token: rt };
+            if (at && rt) handoffTokens = { access_token: at, refresh_token: rt };
         }
 
-        // detectSessionInUrl: false — we handle hash manually; Supabase's auto-parse can interfere with cross-origin handoff
+        // detectSessionInUrl: false — we handle session manually
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { detectSessionInUrl: false }
         });
 
-        var hashPromise = Promise.resolve();
-        if (hashTokens) {
-            hashPromise = supabaseClient.auth.setSession(hashTokens)
+        window.addEventListener('message', function(ev) {
+            if (ev.origin !== 'https://marziale.tech' && ev.origin !== 'http://localhost:8765' && ev.origin !== 'http://127.0.0.1:8765') return;
+            if (ev.data?.type !== 'marziale-session' || !ev.data?.session) return;
+            var s = ev.data.session;
+            if (!s.access_token || !s.refresh_token) return;
+            supabaseClient.auth.setSession({ access_token: s.access_token, refresh_token: s.refresh_token })
+                .then(function() { handoffTokens = null; })
+                .catch(function(err) { console.error('Session handoff failed:', err?.message || err); });
+        });
+
+        var handoffPromise = Promise.resolve();
+        if (handoffTokens) {
+            handoffPromise = supabaseClient.auth.setSession(handoffTokens)
                 .then(function() {
                     window.history.replaceState(null, '', window.location.pathname + window.location.search);
                 })
@@ -1773,7 +1786,7 @@
             checkAdminAndRefreshEvents();
         }
 
-        hashPromise.then(function() {
+        handoffPromise.then(function() {
             return supabaseClient.auth.getSession();
         }).then(function(r) {
             var user = r.data?.session?.user || null;
