@@ -410,6 +410,10 @@
             min-width: 0;
             margin: 0;
         }
+        .browse-header-with-search.browse-header-whatnot .browse-search,
+        .browse-header-with-search.browse-header-whatnot .browse-pickup-blurb {
+            display: none;
+        }
         .browse-pickup-blurb {
             font-size: 12px;
             color: #e8e0d4;
@@ -417,6 +421,45 @@
             flex-shrink: 0;
         }
         .browse-pickup-blurb strong { color: #c9a227; }
+        .browse-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #5c5240;
+        }
+        .browse-tab {
+            background: transparent;
+            border: none;
+            color: #8a7d6d;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .browse-tab:hover { color: #e8e0d4; }
+        .browse-tab.active { color: #c9a227; border-bottom-color: #c9a227; }
+        .browse-tab-panel { display: none; }
+        .browse-tab-panel.active { display: block; }
+        .browse-whatnot-foreshadow {
+            text-align: center;
+            padding: 32px 16px;
+        }
+        .browse-whatnot-foreshadow p { margin: 0 0 12px 0; }
+        .browse-whatnot-foreshadow p:last-child { margin-bottom: 0; }
+        .browse-whatnot-logo-link {
+            display: inline-block;
+            margin: 12px 0;
+            line-height: 0;
+        }
+        .browse-whatnot-logo-link:hover .browse-whatnot-logo { opacity: 0.85; }
+        .browse-whatnot-logo {
+            height: 96px;
+            width: auto;
+            display: block;
+            transition: opacity 0.2s;
+        }
         .browse-address {
             margin: 16px 0 0 0;
             font-size: 13px;
@@ -880,10 +923,24 @@
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
-            <div id="browseContent">
-                <div class="browse-loading">Loading inventory...</div>
+            <div class="browse-tabs">
+                <button type="button" class="browse-tab active" id="browseTabCatalog">Catalog</button>
+                <button type="button" class="browse-tab" id="browseTabWhatnot">Whatnot</button>
             </div>
-            <p class="browse-address">7632 N. State Street, Lowville, NY, United States, 13367</p>
+            <div id="browseTabCatalogPanel" class="browse-tab-panel active">
+                <div id="browseContent">
+                    <div class="browse-loading">Loading inventory...</div>
+                </div>
+                <p class="browse-address">7632 N. State Street, Lowville, NY, United States, 13367</p>
+            </div>
+            <div id="browseTabWhatnotPanel" class="browse-tab-panel">
+                <div class="browse-whatnot-foreshadow">
+                    <p>Coming soon!</p>
+                    <a href="https://www.whatnot.com/" target="_blank" rel="noopener" class="browse-whatnot-logo-link" aria-label="Whatnot (opens in new tab)">
+                        <img src="assets/whatnot-logo-white.png" alt="" class="browse-whatnot-logo">
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1234,6 +1291,28 @@
     function initInventory() {
         var browseContent = document.getElementById('browseContent');
         var browseSearch = document.getElementById('browseSearch');
+        var browseHeader = document.getElementById('browseWindowHeader');
+        var tabCatalog = document.getElementById('browseTabCatalog');
+        var tabWhatnot = document.getElementById('browseTabWhatnot');
+        var panelCatalog = document.getElementById('browseTabCatalogPanel');
+        var panelWhatnot = document.getElementById('browseTabWhatnotPanel');
+
+        if (tabCatalog && tabWhatnot && panelCatalog && panelWhatnot) {
+            tabCatalog.addEventListener('click', function() {
+                tabCatalog.classList.add('active');
+                tabWhatnot.classList.remove('active');
+                panelCatalog.classList.add('active');
+                panelWhatnot.classList.remove('active');
+                if (browseHeader) browseHeader.classList.remove('browse-header-whatnot');
+            });
+            tabWhatnot.addEventListener('click', function() {
+                tabWhatnot.classList.add('active');
+                tabCatalog.classList.remove('active');
+                panelWhatnot.classList.add('active');
+                panelCatalog.classList.remove('active');
+                if (browseHeader) browseHeader.classList.add('browse-header-whatnot');
+            });
+        }
 
         // Load inventory when browse window opens
         browseBtn.addEventListener('click', function() {
