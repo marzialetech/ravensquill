@@ -1780,7 +1780,7 @@
             if (currentUser) {
                 supabaseClient.auth.signOut();
             } else {
-                window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
+                window.location.href = 'https://marziale.tech/';
             }
         });
 
@@ -1789,7 +1789,7 @@
 
         authGithubBtn.addEventListener('click', function() {
             authError.style.display = 'none';
-            window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
+            window.location.href = 'https://marziale.tech/';
         });
 
         authLogoutBtn.addEventListener('click', function() {
