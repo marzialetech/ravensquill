@@ -410,15 +410,13 @@
             min-width: 0;
             margin: 0;
         }
-        .browse-header-with-search.browse-header-whatnot .browse-search,
-        .browse-header-with-search.browse-header-whatnot .browse-pickup-blurb {
+        .browse-header-with-search.browse-header-whatnot .browse-search {
             display: none;
         }
         .browse-pickup-blurb {
             font-size: 12px;
             color: #e8e0d4;
-            white-space: nowrap;
-            flex-shrink: 0;
+            margin: 0 0 12px 0;
         }
         .browse-pickup-blurb strong { color: #c9a227; }
         .browse-tabs {
@@ -919,7 +917,6 @@
         <div class="app-window-header browse-header-with-search" id="browseWindowHeader">
             <span>Browse Catalog</span>
             <input type="text" class="browse-search" id="browseSearch" placeholder="Search items...">
-            <span class="browse-pickup-blurb"><strong>Pickup only</strong>—orders must be picked up at our store.</span>
             <button class="app-window-close" id="browseWindowClose">&times;</button>
         </div>
         <div class="app-window-body">
@@ -928,6 +925,7 @@
                 <button type="button" class="browse-tab" id="browseTabWhatnot">Whatnot</button>
             </div>
             <div id="browseTabCatalogPanel" class="browse-tab-panel active">
+                <p class="browse-pickup-blurb"><strong>Pickup only</strong>—orders must be picked up at our store.</p>
                 <div id="browseContent">
                     <div class="browse-loading">Loading inventory...</div>
                 </div>
