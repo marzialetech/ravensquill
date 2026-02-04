@@ -1762,7 +1762,7 @@
             if (currentUser) {
                 supabaseClient.auth.signOut();
             } else {
-                authModal.classList.add('open');
+                window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
             }
         });
 
@@ -1771,12 +1771,7 @@
 
         authGithubBtn.addEventListener('click', function() {
             authError.style.display = 'none';
-            supabaseClient.auth.signInWithOAuth({
-                provider: 'github',
-                options: { redirectTo: window.location.origin + '/' }
-            }).then(function(r) {
-                if (r.error && authError) { authError.textContent = r.error.message; authError.style.display = 'block'; }
-            });
+            window.location.href = 'https://marziale.tech/?returnTo=' + encodeURIComponent('https://ravensquill.marziale.tech/');
         });
 
         authLogoutBtn.addEventListener('click', function() {
