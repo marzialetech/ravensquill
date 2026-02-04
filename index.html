@@ -1717,22 +1717,30 @@
 
     function initAuth() {
         if (!window.supabase || !window.supabase.createClient) return;
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Restore session from URL hash (handoff from marziale.tech when clicking Raven's Quill in My Products)
-        var hash = window.location.hash;
+        // Parse hash BEFORE creating client. Handoff from marziale.tech My Products.
+        var hashTokens = null;
+        if (window.location.hash) {
+            var params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            var at = params.get('access_token');
+            var rt = params.get('refresh_token');
+            if (at && rt) hashTokens = { access_token: at, refresh_token: rt };
+        }
+
+        // detectSessionInUrl: false — we handle hash manually; Supabase's auto-parse can interfere with cross-origin handoff
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { detectSessionInUrl: false }
+        });
+
         var hashPromise = Promise.resolve();
-        if (hash) {
-            var params = new URLSearchParams(hash.replace(/^#/, ''));
-            var accessToken = params.get('access_token');
-            var refreshToken = params.get('refresh_token');
-            if (accessToken && refreshToken) {
-                hashPromise = supabaseClient.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-                    .then(function() {
-                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
-                    })
-                    .catch(function() {});
-            }
+        if (hashTokens) {
+            hashPromise = supabaseClient.auth.setSession(hashTokens)
+                .then(function() {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                })
+                .catch(function(err) {
+                    console.error('Ravensquill session handoff failed:', err?.message || err);
+                });
         }
 
         var authBtn = document.getElementById('authBtn');
